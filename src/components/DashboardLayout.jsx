@@ -345,9 +345,9 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       const m = MOCK_MOVIES.find(x => x.id === selectedMovieId);
       if (m && m.id && m.id.startsWith('vod_')) {
         const streamId = m.id.replace('vod_', '');
-        const xtUrl = localStorage.getItem('thriptv_xtUrl');
-        const xtUser = localStorage.getItem('thriptv_xtUser');
-        const xtPass = localStorage.getItem('thriptv_xtPass');
+        const xtUrl = localStorage.getItem('thriptw_xtUrl');
+        const xtUser = localStorage.getItem('thriptw_xtUser');
+        const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
           fetch('/api/proxy/xtream', {
@@ -389,9 +389,9 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       const s = MOCK_SERIES.find(x => x.id === selectedSeriesId);
       if (s && s.id && s.id.startsWith('series_')) {
         const streamId = s.id.replace('series_', '');
-        const xtUrl = localStorage.getItem('thriptv_xtUrl');
-        const xtUser = localStorage.getItem('thriptv_xtUser');
-        const xtPass = localStorage.getItem('thriptv_xtPass');
+        const xtUrl = localStorage.getItem('thriptw_xtUrl');
+        const xtUser = localStorage.getItem('thriptw_xtUser');
+        const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
           fetch('/api/proxy/xtream', {
@@ -477,17 +477,17 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
   useEffect(() => {
     try {
-      let stored = JSON.parse(localStorage.getItem('thriptv_saved_lists') || '[]');
-      const currentUrl = localStorage.getItem('thriptv_xtUrl');
-      const currentUser = localStorage.getItem('thriptv_xtUser');
-      const currentPass = localStorage.getItem('thriptv_xtPass');
+      let stored = JSON.parse(localStorage.getItem('thriptw_saved_lists') || '[]');
+      const currentUrl = localStorage.getItem('thriptw_xtUrl');
+      const currentUser = localStorage.getItem('thriptw_xtUser');
+      const currentPass = localStorage.getItem('thriptw_xtPass');
       
       if (currentUrl && currentUser && currentPass) {
         const exists = stored.find(l => l.url === currentUrl && l.user === currentUser);
         if (!exists) {
            const currentList = { url: currentUrl, user: currentUser, pass: currentPass, name: currentUser };
            stored.push(currentList);
-           localStorage.setItem('thriptv_saved_lists', JSON.stringify(stored));
+           localStorage.setItem('thriptw_saved_lists', JSON.stringify(stored));
         }
       }
       setSavedLists(stored);
@@ -502,29 +502,29 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     const newList = { url: newListUrl, user: newListUser, pass: newListPass, name: newListUser };
     const updated = [...savedLists, newList];
     setSavedLists(updated);
-    localStorage.setItem('thriptv_saved_lists', JSON.stringify(updated));
+    localStorage.setItem('thriptw_saved_lists', JSON.stringify(updated));
     setNewListUrl(''); setNewListUser(''); setNewListPass('');
   };
 
   const handleActivateList = (list) => {
-    localStorage.setItem('thriptv_xtUrl', list.url);
-    localStorage.setItem('thriptv_xtUser', list.user);
-    localStorage.setItem('thriptv_xtPass', list.pass);
+    localStorage.setItem('thriptw_xtUrl', list.url);
+    localStorage.setItem('thriptw_xtUser', list.user);
+    localStorage.setItem('thriptw_xtPass', list.pass);
     window.location.reload();
   };
 
   const handleDeleteList = (list) => {
     const updated = savedLists.filter(l => !(l.url === list.url && l.user === list.user));
     setSavedLists(updated);
-    localStorage.setItem('thriptv_saved_lists', JSON.stringify(updated));
+    localStorage.setItem('thriptw_saved_lists', JSON.stringify(updated));
   };
 
   useEffect(() => {
     if (!isPremium) {
-      let startDateStr = localStorage.getItem('thriptv_trial_start');
+      let startDateStr = localStorage.getItem('thriptw_trial_start');
       if (!startDateStr) {
         startDateStr = Date.now().toString();
-        localStorage.setItem('thriptv_trial_start', startDateStr);
+        localStorage.setItem('thriptw_trial_start', startDateStr);
       }
       
       const startDate = parseInt(startDateStr, 10);
@@ -1691,13 +1691,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               )}
             </div>
 
-            {/* SECCIÓN 2: Listas IPTV */}
+            {/* SECCIÓN 2: Listas IPTW */}
             <div className="settings-card">
               <div className="settings-card-header">
                 <Tv size={24} color="var(--primary-red)" />
                 <div className="settings-card-title-group" style={{ flex: 1 }}>
-                  <h3>{tr.settings.iptvLists}</h3>
-                  <p>{tr.settings.iptvListsSub}</p>
+                  <h3>{tr.settings.iptwLists}</h3>
+                  <p>{tr.settings.iptwListsSub}</p>
                 </div>
               </div>
 
@@ -1707,7 +1707,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   {tr.settings.activeList}
                 </h4>
                 <p style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#fff' }}>
-                  {tr.settings.listUser} {localStorage.getItem('thriptv_xtUser') || 'Modo Archivo'}
+                  {tr.settings.listUser} {localStorage.getItem('thriptw_xtUser') || 'Modo Archivo'}
                 </p>
                 {playlistData?.account_info?.exp_date && (
                   <p style={{ margin: 0, fontSize: '13px', color: '#f1c40f' }}>
@@ -1754,13 +1754,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
             </div>
 
-            {/* SECCIÓN 3: Configuración IPTV */}
+            {/* SECCIÓN 3: Configuración IPTW */}
             <div className="settings-card">
               <div className="settings-card-header">
                 <Settings size={24} color="var(--primary-red)" />
                 <div className="settings-card-title-group">
-                  <h3>{tr.settings.iptvConfig}</h3>
-                  <p>{tr.settings.iptvConfigSub}</p>
+                  <h3>{tr.settings.iptwConfig}</h3>
+                  <p>{tr.settings.iptwConfigSub}</p>
                 </div>
               </div>
 
@@ -1912,3 +1912,4 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 };
 
 export default DashboardLayout;
+

@@ -83,7 +83,7 @@ app.delete('/api/sports/schedule/:id', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'Online', message: 'THR IPTV Backend Funciona' });
+  res.json({ status: 'Online', message: 'THR IPTW Backend Funciona' });
 });
 
 // -------- PROXY XTREAM CODES (Anti-CORS) --------
@@ -185,3 +185,4 @@ app.listen(PORT, () => {
   console.log(`🚀 SERVIDOR BACKEND ACTIVO EN PUERTO ${PORT}`);
   console.log(`========================================\n`);
 });
+

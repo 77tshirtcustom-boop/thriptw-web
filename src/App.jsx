@@ -117,9 +117,9 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('thriptv_xtUrl');
-    localStorage.removeItem('thriptv_xtUser');
-    localStorage.removeItem('thriptv_xtPass');
+    localStorage.removeItem('thriptw_xtUrl');
+    localStorage.removeItem('thriptw_xtUser');
+    localStorage.removeItem('thriptw_xtPass');
     setIsLoggedIn(false);
     setPlaylistData({ channels: [], movies: [], series: [], categories: [] });
   };
@@ -147,3 +147,4 @@ function App() {
 }
 
 export default App;
+

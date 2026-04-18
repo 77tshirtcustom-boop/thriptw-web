@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Globe, User, Lock, Eye, EyeOff, Link, LogIn, Tv, FileText } from 'lucide-react';
-import { parseM3UString } from '../services/iptvParser';
+import { parseM3UString } from '../services/iptwParser';
 import { fetchXtreamData } from '../services/xtreamService';
 import { translations } from '../i18n/translations';
 import './LoginScreen.css';
@@ -19,9 +19,9 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    const savedUrl = localStorage.getItem('thriptv_xtUrl');
-    const savedUser = localStorage.getItem('thriptv_xtUser');
-    const savedPass = localStorage.getItem('thriptv_xtPass');
+    const savedUrl = localStorage.getItem('thriptw_xtUrl');
+    const savedUser = localStorage.getItem('thriptw_xtUser');
+    const savedPass = localStorage.getItem('thriptw_xtPass');
     if (savedUrl && savedUser && savedPass) {
       setXtUrl(savedUrl);
       setXtUser(savedUser);
@@ -96,9 +96,9 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
            setIsLoading(false);
            return;
          }
-         localStorage.setItem('thriptv_xtUrl', xtUrl);
-         localStorage.setItem('thriptv_xtUser', xtUser);
-         localStorage.setItem('thriptv_xtPass', xtPass);
+         localStorage.setItem('thriptw_xtUrl', xtUrl);
+         localStorage.setItem('thriptw_xtUser', xtUser);
+         localStorage.setItem('thriptw_xtPass', xtPass);
          onLogin({ type: 'xtream', data: xtreamData });
        } catch (err) {
          setErrorMsg(err.message);
@@ -119,7 +119,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
       {/* SECCIÓN DEL LOGO Y MARCA */}
       <div className="logo-section">
         <div className="img-logo-circle">
-          <img src="./Logo.png" alt="THRIPTV Logo" className="logo-image" style={{ objectFit: 'contain' }} />
+          <img src="./Logo.png" alt="THRIPTW Logo" className="logo-image" style={{ objectFit: 'contain' }} />
         </div>
         <h1 className="brand-text">
           THR<span>IPTW</span>
@@ -205,3 +205,4 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
 };
 
 export default LoginScreen;
+

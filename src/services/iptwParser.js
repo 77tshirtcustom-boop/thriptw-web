@@ -1,19 +1,52 @@
-import parser from 'iptv-playlist-parser';
-
 export const parseM3UString = (m3uString) => {
-  const parsed = parser.parse(m3uString);
-  
+  const lines = m3uString.split(/\r?\n/);
+  const items = [];
+  let currentItem = {};
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    if (line.startsWith('#EXTINF:')) {
+      currentItem = { tvg: {}, group: {} };
+      
+      // Extraer atributos como tvg-id="", tvg-logo="", group-title=""
+      const attrRegex = /([a-zA-Z0-9_-]+)="([^"]*)"/g;
+      let match;
+      while ((match = attrRegex.exec(line)) !== null) {
+        const key = match[1];
+        const val = match[2];
+        if (key === 'tvg-id') currentItem.tvg.id = val;
+        if (key === 'tvg-logo') currentItem.tvg.logo = val;
+        if (key === 'group-title') currentItem.group.title = val;
+      }
+      
+      // Extraer el nombre (todo lo que va después de la última coma)
+      const commaIndex = line.lastIndexOf(',');
+      if (commaIndex !== -1) {
+        currentItem.name = line.substring(commaIndex + 1).trim();
+      }
+    } else if (!line.startsWith('#')) {
+      // Esta línea es la URL
+      if (currentItem.name) {
+        currentItem.url = line;
+        items.push(currentItem);
+        currentItem = {};
+      }
+    }
+  }
+
   const liveChannels = [];
   const vodMovies = [];
   const vodSeries = [];
   const groupsTemp = new Set();
   
-  parsed.items.forEach((item, index) => {
+  items.forEach((item, index) => {
     // Determinar categoría por grupo
     const groupTitle = (item.group && item.group.title) ? item.group.title.toUpperCase() : 'UNCATEGORIZED';
     groupsTemp.add(groupTitle);
     
-    // Logica básica de tipo de contenido
+    // Lógica básica de tipo de contenido
     const isVOD = item.url && (item.url.includes('/movie/') || item.url.endsWith('.mp4') || item.url.endsWith('.mkv') || groupTitle.includes('VOD') || groupTitle.includes('PELICULA') || groupTitle.includes('MOVI'));
     const isSeries = item.url && (item.url.includes('/series/') || groupTitle.includes('SERIE'));
     
