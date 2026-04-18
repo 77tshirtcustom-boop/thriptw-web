@@ -1,0 +1,90 @@
+/* Import Inter Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-color: #0A0A0A;
+  --panel-bg: #111111;
+  --input-bg: #0A0A0A;
+  --primary-red: #D91E18;
+  --text-primary: #FFFFFF;
+  --text-secondary: #888888;
+  --border-color: #222222;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden; /* Avoid Windows 100vw bug */
+}
+
+
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+input {
+  font-family: 'Inter', sans-serif;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-red);
+}
+
+/* Common Animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TV Spatial Navigation Focus Styles */
+.focusable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+body.tv-navigation-active .focusable:focus, 
+body.tv-navigation-active .focusable:focus-visible {
+  outline: 2px solid #f1c40f !important;
+  outline-offset: 2px !important;
+  z-index: 9999 !important;
+  background-color: rgba(241, 196, 15, 0.2) !important;
+  color: #f1c40f !important; /* Fuerza iconos amarillos en el menú inferior */
+}
+
+/* Cambiar stroke/color a amarillo en iconos (como Lucide-react) al tener foco */
+body.tv-navigation-active .focusable:focus svg, 
+body.tv-navigation-active .focusable:focus-visible svg {
+  color: #f1c40f !important;
+  stroke: #f1c40f !important;
+}
+
+/* Excepción: En la barra de navegación inferior, solo cambia el color, sin cuadro */
+body.tv-navigation-active .bottom-nav .nav-item.focusable:focus, 
+body.tv-navigation-active .bottom-nav .nav-item.focusable:focus-visible {
+  outline: none !important;
+  background-color: transparent !important;
+  transform: scale(1.2) !important;
+}
