@@ -21,7 +21,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
   const containerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
 
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('00:00');
   const [duration, setDuration] = useState('00:00');
@@ -29,6 +29,8 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [activeMenu, setActiveMenu] = useState(null); // 'audio' | 'subtitles' | null
 
@@ -42,57 +44,90 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
     const video = videoRef.current;
     if (!video || !media?.url) return;
 
-    let hls;
+    setError(null);
+    setIsLoading(true);
+    setIsPlaying(false);
 
-    const isDirectVideo = media.url.includes('.mp4') || media.url.includes('.mkv') || media.url.includes('.avi');
+    let hls;
+    let streamUrl = media.url;
+
+    // -- MEJORA DE CONTENIDO MIXTO --
+    // Si estamos en HTTPS y el stream es HTTP, intentamos forzar HTTPS
+    if (window.location.protocol === 'https:' && streamUrl.startsWith('http:')) {
+      console.log("Detectado Contenido Mixto (HTTPS -> HTTP). Intentando upgrade a HTTPS...");
+      streamUrl = streamUrl.replace('http:', 'https:');
+    }
+
+    const isDirectVideo = streamUrl.includes('.mp4') || streamUrl.includes('.mkv') || streamUrl.includes('.avi');
+
+    const handlePlay = () => {
+      video.play().then(() => {
+        setIsPlaying(true);
+        setIsLoading(false);
+      }).catch(e => {
+        console.log("Autoplay blocked, muting...", e);
+        video.muted = true;
+        setIsMuted(true);
+        setVolume(0);
+        video.play().then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        }).catch(err => {
+          console.error("Play failed even muted:", err);
+          setIsPlaying(false);
+          setIsLoading(false);
+        });
+      });
+    };
 
     if (Hls.isSupported() && !isDirectVideo) {
       hls = new Hls({
         maxBufferLength: 30,
         maxMaxBufferLength: 60,
+        enableWorker: true,
       });
-      hls.loadSource(media.url);
+      
+      hls.loadSource(streamUrl);
       hls.attachMedia(video);
+      
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().then(() => setIsPlaying(true)).catch(e => {
-            console.log("Autoplay blocked, muting...", e);
-            video.muted = true;
-            setIsMuted(true);
-            setVolume(0);
-            video.play().then(() => setIsPlaying(true)).catch(err => {
-                console.log(err);
-                setIsPlaying(false);
-            });
-        });
+        handlePlay();
       });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl') || media.url.includes('.mp4') || media.url.includes('.mkv')) {
-      // Soporte nativo de Apple Safari o Ficheros de Video Directos Web
-      video.src = media.url;
-      video.addEventListener('loadedmetadata', () => {
-        video.play().then(() => setIsPlaying(true)).catch(e => {
-            console.log("Autoplay blocked, muting...", e);
-            video.muted = true;
-            setIsMuted(true);
-            setVolume(0);
-            video.play().then(() => setIsPlaying(true)).catch(err => {
-                console.log(err);
-                setIsPlaying(false);
-            });
-        });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error("HLS Error:", data);
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.error("Fatal network error encountered, try to recover");
+              hls.startLoad();
+              setError("Error de red. Asegúrate de que el enlace es válido y permite CORS.");
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.error("Fatal media error encountered, try to recover");
+              hls.recoverMediaError();
+              break;
+            default:
+              hls.destroy();
+              setError("Error fatal en la reproducción.");
+              break;
+          }
+          setIsLoading(false);
+        }
       });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl') || isDirectVideo) {
+      video.src = streamUrl;
+      video.onloadedmetadata = () => {
+        handlePlay();
+      };
+      video.onerror = () => {
+        console.error("Native Video Error:", video.error);
+        setError("El navegador no puede reproducir este video. Puede ser un problema de Mixed Content o Codecs.");
+        setIsLoading(false);
+      };
     } else {
-      // Fallback a nivel de navegador (.ts streams etc, algunos paneles Xtream los proxies como directos si navegador soporta streaming chunks)
-      video.src = media.url;
-      video.play().then(() => setIsPlaying(true)).catch(e => {
-            console.log("Autoplay blocked... ", e);
-            video.muted = true;
-            setIsMuted(true);
-            setVolume(0);
-            video.play().then(() => setIsPlaying(true)).catch(err => {
-                console.log(err);
-                setIsPlaying(false);
-            });
-      });
+      video.src = streamUrl;
+      handlePlay();
     }
 
     return () => {
@@ -235,6 +270,31 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
       >
         <track kind="captions" />
       </video>
+
+      {/* OVERLAY DE CARGA (LOADING) */}
+      {isLoading && !error && (
+        <div className="player-loading-overlay">
+          <div className="player-spinner"></div>
+          <p>Cargando stream...</p>
+        </div>
+      )}
+
+      {/* OVERLAY DE ERROR */}
+      {error && (
+        <div className="player-error-overlay fade-in">
+          <div className="error-content">
+            <div className="error-icon">⚠️</div>
+            <h3>No se pudo cargar el video</h3>
+            <p className="error-text">{error}</p>
+            <p className="error-hint">
+              Si estás en un navegador, asegúrate de permitir <b>"Contenido no seguro"</b> en los ajustes del sitio (click en el candado de la barra de direcciones).
+            </p>
+            <button className="btn-error-retry focusable" onClick={() => window.location.reload()}>
+              Reintentar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* OVERLAY DE CONTROLES */}
       <div className="player-ui">

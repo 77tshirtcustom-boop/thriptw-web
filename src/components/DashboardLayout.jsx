@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Radio, 
   RefreshCcw, 
@@ -43,185 +43,43 @@ const SYSTEM_CATEGORIES = [
 ];
 
 // -- GRUPOS EXTRAÍDOS SIMULADOS DE M3U (DINÁMICOS) --
-const M3U_EXTRACTED_GROUPS = [
-  { id: 'es-tv', name: '🇪🇸 ESPAÑA TV', icon: Globe },
-  { id: 'latam-vip', name: '🌎 LATAM VIP', icon: Globe },
-  { id: 'us-uk', name: '🇺🇸 USA / UK', icon: Globe },
-  { id: 'vod-es', name: '🇪🇸 CINE ESPAÑOL', icon: Film },
-  { id: 'vod-en', name: '🇺🇸 MOVIES (EN)', icon: Film },
-];
+const M3U_EXTRACTED_GROUPS = [];
 
 // Unión temporal para facilitar recuentos
-const STATIC_MOCK_CATEGORIES = [...SYSTEM_CATEGORIES, ...M3U_EXTRACTED_GROUPS];
+const STATIC_MOCK_CATEGORIES = [...SYSTEM_CATEGORIES];
 
-const STATIC_MOCK_CHANNELS = [
-  { id: 1, name: "HBO Premium HD", epg: "14:00 - Juego de Tronos", img: "https://api.dicebear.com/7.x/identicon/svg?seed=HBO&backgroundColor=4A00E0", groupId: 'us-uk' },
-  { id: 2, name: "ESPN 1 HD", epg: "15:30 - Champions League", img: "https://api.dicebear.com/7.x/identicon/svg?seed=ESPN&backgroundColor=c31432", groupId: 'latam-vip' },
-  { id: 3, name: "Fox Sports", epg: "Todo el día", img: "https://api.dicebear.com/7.x/identicon/svg?seed=Fox&backgroundColor=0f0c29", groupId: 'us-uk' },
-  { id: 4, name: "CNN Español", epg: "14:00 - Noticias Internacionales", img: "https://api.dicebear.com/7.x/identicon/svg?seed=CNN&backgroundColor=cb2d3e", groupId: 'latam-vip' },
-  { id: 5, name: "Disney Channel", epg: "16:00 - Toy Story 4", img: "https://api.dicebear.com/7.x/identicon/svg?seed=Disney&backgroundColor=1fa2ff", groupId: 'es-tv' },
-  { id: 6, name: "MTV Hits", epg: "Top 20 Billboard", img: "https://api.dicebear.com/7.x/identicon/svg?seed=MTV&backgroundColor=ff0844", groupId: 'us-uk' },
-  { id: 7, name: "Nat Geo Wild", epg: "18:00 - Planeta Tierra VIP", img: "https://api.dicebear.com/7.x/identicon/svg?seed=NatGeo&backgroundColor=f8b500", groupId: 'es-tv' },
-  { id: 8, name: "TNT Series", epg: "The Mentalist - T5 E12", img: "https://api.dicebear.com/7.x/identicon/svg?seed=TNT&backgroundColor=141e30", groupId: 'latam-vip' },
-];
+const STATIC_MOCK_CHANNELS = [];
+const STATIC_MOCK_MOVIES = [];
+const STATIC_MOCK_SERIES = [];
 
-const STATIC_MOCK_MOVIES = [
-  { id: 101, title: "Duna: Parte Dos", imdb: 8.8, poster: "https://image.tmdb.org/t/p/w500/8b8R8l88Qje9dn9OE8PB05AWbUP.jpg", groupId: 'vod-es', director: "Denis Villeneuve", genre: "Ciencia Ficción, Aventura", cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson", synopsis: "Paul Atreides se une a Chani y a los Fremen mientras busca venganza contra los conspiradores que destruyeron a su familia.", duration: "166 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtec005WdYQDE.jpg" },
-  { id: 102, title: "Oppenheimer", imdb: 8.4, poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", groupId: 'vod-en', director: "Christopher Nolan", genre: "Drama, Historia", cast: "Cillian Murphy, Emily Blunt, Matt Damon", synopsis: "La historia del científico estadounidense J. Robert Oppenheimer y su papel en el desarrollo de la bomba atómica.", duration: "180 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/rMvPXy8PUjj1oCGZqQdoeyZ3Sls.jpg" },
-  { id: 103, title: "Spider-Man: Across the Spider-Verse", imdb: 8.6, poster: "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg", groupId: 'vod-en', director: "Joaquim Dos Santos", genre: "Animación, Acción", cast: "Shameik Moore, Hailee Steinfeld, Oscar Isaac", synopsis: "Miles Morales es catapultado a través del Multiverso, donde se encuentra con un equipo de Spider-Personas encargadas de proteger su propia existencia.", duration: "140 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg" },
-  { id: 104, title: "Película Rota (Test Fallback)", imdb: 5.0, poster: "https://link-roto-que-no-existe.com/cover.jpg", groupId: 'vod-es', director: "Director Falso", genre: "Test", cast: "Actor 1", synopsis: "Película de prueba para ver qué pasa cuando la portada falla.", duration: "90 min", year: 2024, backdrop: "" },
-  { id: 105, title: "The Dark Knight", imdb: 9.0, poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", groupId: 'vod-en', director: "Christopher Nolan", genre: "Acción, Crimen, Drama", cast: "Christian Bale, Heath Ledger, Aaron Eckhart", synopsis: "Cuando la amenaza conocida como el Joker emerge de su pasado misterioso, causa estragos y caos en la gente de Gotham.", duration: "152 min", year: 2008, backdrop: "https://image.tmdb.org/t/p/original/dqK9Hag1054tghRQSqLSfrkvQnA.jpg" },
-  { id: 106, title: "Poor Things", imdb: 8.0, poster: "https://image.tmdb.org/t/p/w500/ckzIGvUhnT5NqF4K1a5hL91mR7u.jpg", groupId: 'vod-en', director: "Yorgos Lanthimos", genre: "Comedia, Fantasía", cast: "Emma Stone, Mark Ruffalo, Willem Dafoe", synopsis: "La increíble historia y la fantástica evolución de Bella Baxter, una joven devuelta a la vida por el brillante y poco ortodoxo científico Dr. Godwin Baxter.", duration: "141 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/bQS43Zo51m8KDr1Gj6HqN3hI0R7.jpg" },
-  { id: 107, title: "Godzilla x Kong", imdb: 6.5, poster: "https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg", groupId: 'vod-es', director: "Adam Wingard", genre: "Acción, Ciencia Ficción", cast: "Rebecca Hall, Brian Tyree Henry, Dan Stevens", synopsis: "Una aventura cinematográfica completamente nueva que enfrenta al todopoderoso Kong y al temible Godzilla contra una colosal amenaza no descubierta oculta dentro de nuestro mundo.", duration: "115 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg" },
-  { id: 108, title: "Kung Fu Panda 4", imdb: 7.1, poster: "https://image.tmdb.org/t/p/w500/kZ1hQ7c2d8290G5E2wN3AEM7H51.jpg", groupId: 'vod-es', director: "Mike Mitchell", genre: "Animación, Familia", cast: "Jack Black, Awkwafina, Viola Davis", synopsis: "Po debe entrenar a un nuevo Guerrero Dragón mientras se enfrenta a un nuevo villano capaz de convocar a villanos del pasado.", duration: "94 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/kYgQzzjNis5jJalYtI62HapO1M2.jpg" }
-];
-
-const STATIC_MOCK_SERIES = [
-  { 
-    id: 201, 
-    title: "Breaking Bad", 
-    imdb: 9.5, 
-    poster: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizwpB.jpg", 
-    groupId: 'vod-es', 
-    director: "Vince Gilligan", 
-    genre: "Crimen, Drama", 
-    cast: "Bryan Cranston, Aaron Paul, Anna Gunn", 
-    synopsis: "Un profesor de química diagnosticado con cáncer de pulmón recurre a la fabricación y venta de metanfetamina para asegurar el futuro de su familia.",
-    year: 2008, 
-    backdrop: "https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '201-s1e1', epNumber: 1, title: "Piloto", duration: "58 min", image: "https://image.tmdb.org/t/p/w500/rXmB0vTIfx7Sj6KxZ4Hj4Yv1tQf.jpg", synopsis: "Walter White, un profesor de química, decide cocinar metanfetamina." },
-          { id: '201-s1e2', epNumber: 2, title: "El Gato está en la Bolsa...", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/qXzZ6C1P0Y1q2c2Ww6n8J2L6mU.jpg", synopsis: "Walt y Jesse intentan resolver un grave problema en la RV." }
-        ]
-      },
-      {
-        seasonNumber: 2,
-        episodes: [
-          { id: '201-s2e1', epNumber: 1, title: "Siete Treinta y Siete", duration: "47 min", image: "https://image.tmdb.org/t/p/w500/v9QY0YwQZgM8Z3xXl2Q3M8B2l2E.jpg", synopsis: "Walt y Jesse calculan el dinero exacto que necesitan." },
-          { id: '201-s2e2', epNumber: 2, title: "Rastreador", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/rMvPXy8PUjj1oCGZqQdoeyZ3Sls.jpg", synopsis: "Las cosas se salen de control con la llegada de Hank." }
-        ]
-      }
-    ]
+const MOCK_SPORTS_AGENDA = [
+  {
+    id: 'mock-1',
+    sportType: 'football',
+    title: 'Real Madrid - FC Barcelona',
+    time: '21:00',
+    day: 'Hoy',
+    tournament: 'La Liga',
+    tournamentLogo: 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg',
+    channelsList: ['DAZN LaLiga', 'Movistar+'],
+    team1: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+    team2: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg',
+    bgImage: 'https://wallpapercave.com/wp/wp4056407.jpg'
   },
-  { 
-    id: 202, 
-    title: "The Boys", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/2yC1x6yXQzXZyvP7R3C3h0E5c7x.jpg", 
-    groupId: 'vod-en', 
-    director: "Eric Kripke", 
-    genre: "Acción, Comedia", 
-    cast: "Karl Urban, Jack Quaid, Antony Starr", 
-    synopsis: "Un grupo de vigilantes se propone derribar a superhéroes corruptos corporativos que abusan de sus superpoderes.",
-    year: 2019, 
-    backdrop: "https://image.tmdb.org/t/p/original/mGVrXeIjw1eM196fC1yF6fJqM9P.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '202-s1e1', epNumber: 1, title: "The Name of the Game", duration: "60 min", image: "https://image.tmdb.org/t/p/w500/5m1k2n5M9jK9q9R9l6m3q8h1v5i.jpg", synopsis: "Hughie Campbell queda destrozado cuando su novia muere." },
-          { id: '202-s1e2', epNumber: 2, title: "Cherry", duration: "59 min", image: "https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg", synopsis: "The Boys encuentran a su primer blanco de Vought." }
-        ]
-      }
-    ]
-  },
-  { 
-    id: 203, 
-    title: "Stranger Things", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/uOOtwVbSr4QDjAGIifLDvgP2cyS.jpg", 
-    groupId: 'vod-en', 
-    director: "The Duffer Brothers", 
-    genre: "Drama, Fantasía", 
-    cast: "Millie Bobby Brown, Finn Wolfhard, Winona Ryder", 
-    synopsis: "Un niño desaparece misteriosamente y sus amigos emprenden una búsqueda que desvela una serie de misterios ocultos en su pueblo.",
-    year: 2016, 
-    backdrop: "https://image.tmdb.org/t/p/original/56v2KjBlU4XaOv9rVYEQypROD7P.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '203-s1e1', epNumber: 1, title: "Capítulo Uno: La desaparición de Will Byers", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/uOOtwVbSr4QDjAGIifLDvgP2cyS.jpg", synopsis: "De regreso a casa tras jugar con sus amigos, el joven Will Byers desaparece misteriosamente." }
-        ]
-      }
-    ]
-  },
-  { 
-    id: 204, 
-    title: "The Last of Us", 
-    imdb: 8.8, 
-    poster: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", 
-    groupId: 'vod-en', 
-    director: "Craig Mazin", 
-    genre: "Drama, Acción", 
-    cast: "Pedro Pascal, Bella Ramsey", 
-    synopsis: "Supervivientes viajan a través de un EE.UU. post-apocalíptico desolado por una infección fúngica.",
-    year: 2023, 
-    backdrop: "https://image.tmdb.org/t/p/original/aT3sRVqbpz2vEXomo5hI4tc5uAW.jpg",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '204-s1e1', epNumber: 1, title: "Cuando estés perdido en la oscuridad", duration: "80 min", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", synopsis: "El inicio del brote." }] }]
-  },
-  { 
-    id: 205, 
-    title: "Peaky Blinders", 
-    imdb: 8.8, 
-    poster: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg", 
-    groupId: 'vod-en', 
-    director: "Steven Knight", 
-    genre: "Crimen, Drama", 
-    cast: "Cillian Murphy, Tom Hardy", 
-    synopsis: "Epopeya de una familia de gánsteres ambientada en Birmingham, Inglaterra, en 1919.",
-    year: 2013, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '205-s1e1', epNumber: 1, title: "Episodio 1", duration: "57 min", image: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg", synopsis: "Tommy Shelby consigue una caja de armas." }] }]
-  },
-  { 
-    id: 206, 
-    title: "The Office", 
-    imdb: 9.0, 
-    poster: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", 
-    groupId: 'vod-en', 
-    director: "Greg Daniels", 
-    genre: "Comedia", 
-    cast: "Steve Carell, Rainn Wilson", 
-    synopsis: "Falsa documental sobre el día a día de los empleados de la sucursal de Scranton de la empresa de papel Dunder Mifflin.",
-    year: 2005, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '206-s1e1', epNumber: 1, title: "Piloto", duration: "22 min", image: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", synopsis: "Un documental que muestra el día a día en una oficina." }] }]
-  },
-  { 
-    id: 207, 
-    title: "Chernobyl", 
-    imdb: 9.3, 
-    poster: "https://image.tmdb.org/t/p/w500/hlL0k92HhEMq19A1EqGZinHIn2S.jpg", 
-    groupId: 'vod-en', 
-    director: "Craig Mazin", 
-    genre: "Drama, Historia", 
-    cast: "Jared Harris, Stellan Skarsgård", 
-    synopsis: "Dramatización del desastre nuclear de Chernóbil de 1986 y los esfuerzos de limpieza sin precedentes que le siguieron.",
-    year: 2019, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '207-s1e1', epNumber: 1, title: "1:23:45", duration: "59 min", image: "https://image.tmdb.org/t/p/w500/hlL0k92HhEMq19A1EqGZinHIn2S.jpg", synopsis: "Explosión en la planta de energía." }] }]
-  },
-  { 
-    id: 208, 
-    title: "Dark", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/90oGfl2VwP6wrt82z2eC660xP22.jpg", 
-    groupId: 'vod-en', 
-    director: "Baran bo Odar", 
-    genre: "Drama, Misterio", 
-    cast: "Louis Hofmann, Karoline Eichhorn", 
-    synopsis: "Una saga familiar con un toque sobrenatural ambientada en una ciudad alemana donde la desaparición de dos niños expone fracturas familiares.",
-    year: 2017, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '208-s1e1', epNumber: 1, title: "Secretos", duration: "51 min", image: "https://image.tmdb.org/t/p/w500/90oGfl2VwP6wrt82z2eC660xP22.jpg", synopsis: "La misteriosa desaparición de un joven revive trágicos eventos." }] }]
+  {
+    id: 'mock-2',
+    sportType: 'football',
+    title: 'Man. City - Liverpool',
+    time: '18:30',
+    day: 'Mañana',
+    tournament: 'Premier League',
+    tournamentLogo: 'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
+    channelsList: ['Sky Sports', 'DAZN'],
+    team1: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
+    team2: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg',
+    bgImage: 'https://images.alphacoders.com/100/1008088.jpg'
   }
 ];
-
-const MOCK_SPORTS_AGENDA = [];
 
 const cleanTitle = (rawTitle) => {
   if (!rawTitle) return '';
@@ -255,16 +113,26 @@ const translateToSpanish = async (text) => {
 const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }) => {
   const tr = translations[appLanguage] || translations.es;
 
-  const MOCK_CHANNELS = playlistData && playlistData.channels?.length > 0 ? playlistData.channels : STATIC_MOCK_CHANNELS;
-  const MOCK_MOVIES = playlistData && playlistData.movies?.length > 0 ? playlistData.movies : STATIC_MOCK_MOVIES;
-  const MOCK_SERIES = playlistData && playlistData.series?.length > 0 ? playlistData.series : STATIC_MOCK_SERIES;
-  const MOCK_CATEGORIES = playlistData && playlistData.categories?.length > 0 
-    ? [...SYSTEM_CATEGORIES, ...playlistData.categories] 
-    : STATIC_MOCK_CATEGORIES;
-
+  const isListLoaded = playlistData && (
+    (playlistData.channels && playlistData.channels.length > 0) || 
+    (playlistData.movies && playlistData.movies.length > 0) || 
+    (playlistData.series && playlistData.series.length > 0)
+  );
+  
+  const MOCK_CHANNELS = isListLoaded ? (playlistData.channels || []) : STATIC_MOCK_CHANNELS;
+  const MOCK_MOVIES = isListLoaded ? (playlistData.movies || []) : STATIC_MOCK_MOVIES;
+  const MOCK_SERIES = isListLoaded ? (playlistData.series || []) : STATIC_MOCK_SERIES;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeBottomNav, setActiveBottomNav] = useState('home'); // 'home' | 'settings' | 'movies' | 'series' | 'live'
   
+  const MOCK_CATEGORIES = useMemo(() => {
+    if (!isListLoaded) return STATIC_MOCK_CATEGORIES;
+    let cats = playlistData.categories || [];
+    if (activeBottomNav === 'movies') cats = playlistData.movieCategories || [];
+    if (activeBottomNav === 'series') cats = playlistData.seriesCategories || [];
+    return [...SYSTEM_CATEGORIES, ...cats];
+  }, [isListLoaded, activeBottomNav, playlistData]);
+
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -299,7 +167,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   const [playingMedia, setPlayingMedia] = useState(null);
   
   // STATE DEL ROBOT DEPORTIVO
-  const [liveSchedule, setLiveSchedule] = useState(null);
+  const [liveSchedule, setLiveSchedule] = useState(MOCK_SPORTS_AGENDA);
   const [scheduleError, setScheduleError] = useState(false);
 
   // Debounce search query to prevent UI freezes
@@ -318,7 +186,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const res = await fetch('/api/sports/schedule');
+        const res = await fetch('http://localhost:3001/api/sports/schedule');
         const data = await res.json();
         if (data.success && data.schedule.length > 0) {
           setLiveSchedule(data.schedule);
@@ -350,7 +218,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('/api/proxy/xtream', {
+          fetch('http://localhost:3001/api/proxy/xtream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -394,7 +262,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('/api/proxy/xtream', {
+          fetch('http://localhost:3001/api/proxy/xtream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -412,12 +280,12 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               const translatedPlot = rawPlot ? await translateToSpanish(rawPlot) : rawPlot;
               
               let extractedSeasons = [];
-              if (data.episodes && typeof data.episodes === 'object') {
+              if (data.episodes && typeof data.episodes === 'object' && !Array.isArray(data.episodes)) {
                 Object.keys(data.episodes).forEach(seasonNum => {
                    let epsList = data.episodes[seasonNum];
                    if (Array.isArray(epsList) && epsList.length > 0) {
                       extractedSeasons.push({
-                         seasonNumber: parseInt(seasonNum, 10),
+                         seasonNumber: parseInt(seasonNum, 10) || 1,
                          episodes: epsList.map((ep, idx) => ({
                             id: ep.id || `ep_${idx}`,
                             epNumber: ep.episode_num || (idx + 1),
@@ -430,8 +298,25 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       });
                    }
                 });
+              } else if (Array.isArray(data.episodes)) {
+                 // Algunos paneles devuelven episodios como array plano
+                 extractedSeasons.push({
+                    seasonNumber: 1,
+                    episodes: data.episodes.map((ep, idx) => ({
+                       id: ep.id || `ep_${idx}`,
+                       epNumber: ep.episode_num || (idx + 1),
+                       title: ep.title || `Episodio ${idx + 1}`,
+                       duration: ep.info?.duration ? `${ep.info.duration} min` : 'N/A',
+                       synopsis: ep.info?.plot || '',
+                       image: ep.info?.movie_image || '',
+                       url: `${xtUrl.replace(/\/+$/, '')}/series/${xtUser}/${xtPass}/${ep.id}.${ep.container_extension || 'mp4'}`
+                    }))
+                 });
               }
-              extractedSeasons.sort((a,b) => a.seasonNumber - b.seasonNumber);
+
+              if (extractedSeasons.length > 0) {
+                extractedSeasons.sort((a,b) => (a.seasonNumber || 0) - (b.seasonNumber || 0));
+              }
 
               setMovieDetails(prev => ({
                 ...prev,
@@ -550,7 +435,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     if (!activationCode || activationCode.trim() === '') return;
     setIsVerifying(true);
     try {
-      const resp = await fetch('/api/payments/verify', {
+      const resp = await fetch('http://localhost:3001/api/payments/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode: activationCode })
@@ -598,31 +483,32 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     }
   };
 
-  // CÁLCULO DINÁMICO DE DATOS (A nivel general)
-  const categoriesWithCounts = MOCK_CATEGORIES.map(cat => {
-    if (cat.id === 'fav') return { ...cat, count: favorites.length };
-    if (cat.id === 'hist') return { ...cat, count: history.length };
-    
-    if (cat.id === 'all') {
-       const allCount = activeBottomNav === 'movies' ? MOCK_MOVIES.length : activeBottomNav === 'series' ? MOCK_SERIES.length : MOCK_CHANNELS.length;
-       return { ...cat, count: allCount };
-    }
+  // CÁLCULO DINÁMICO DE DATOS (Memoizado para rendimiento)
+  const categoriesWithCounts = useMemo(() => {
+    return MOCK_CATEGORIES.map(cat => {
+      if (cat.id === 'fav') return { ...cat, count: favorites.length };
+      if (cat.id === 'hist') return { ...cat, count: history.length };
+      
+      if (cat.id === 'all') {
+        const allCount = activeBottomNav === 'movies' ? MOCK_MOVIES.length : activeBottomNav === 'series' ? MOCK_SERIES.length : MOCK_CHANNELS.length;
+        return { ...cat, count: allCount };
+      }
 
-    // Contar según el active context
-    let specificCount = 0;
-    if (activeBottomNav === 'movies') {
-       specificCount = MOCK_MOVIES.filter(m => m.groupId === cat.id).length;
-    } else if (activeBottomNav === 'series') {
-       specificCount = MOCK_SERIES.filter(s => s.groupId === cat.id).length;
-    } else {
-       specificCount = MOCK_CHANNELS.filter(c => c.groupId === cat.id).length;
-    }
+      let specificCount = 0;
+      if (activeBottomNav === 'movies') {
+        specificCount = MOCK_MOVIES.filter(m => m.groupId === cat.id).length;
+      } else if (activeBottomNav === 'series') {
+        specificCount = MOCK_SERIES.filter(s => s.groupId === cat.id).length;
+      } else {
+        specificCount = MOCK_CHANNELS.filter(c => c.groupId === cat.id).length;
+      }
 
-    return { ...cat, count: specificCount };
-  });
+      return { ...cat, count: specificCount };
+    });
+  }, [MOCK_CATEGORIES, favorites, history, activeBottomNav, MOCK_MOVIES, MOCK_SERIES, MOCK_CHANNELS]);
 
-  // RUTINAS DE FILTRADO
-  const getDisplayedChannels = () => {
+  // RUTINAS DE FILTRADO MEMOIZADAS
+  const displayedChannels = useMemo(() => {
     let filtered = MOCK_CHANNELS;
     if (activeCategory === 'fav') {
       filtered = MOCK_CHANNELS.filter(c => favorites.includes(c.id));
@@ -633,12 +519,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     }
 
     if (debouncedSearchQuery.trim() !== '') {
-      filtered = filtered.filter(c => c.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+      const q = debouncedSearchQuery.toLowerCase();
+      filtered = filtered.filter(c => c.name.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  };
+  }, [MOCK_CHANNELS, activeCategory, favorites, history, debouncedSearchQuery, visibleItemsCount]);
 
-  const getDisplayedMovies = () => {
+  const displayedMovies = useMemo(() => {
     let filtered = MOCK_MOVIES;
     if (activeCategory === 'fav') {
       filtered = MOCK_MOVIES.filter(m => favorites.includes(m.id));
@@ -653,12 +540,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     }
 
     if (debouncedSearchQuery.trim() !== '') {
-      filtered = filtered.filter(m => m.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+      const q = debouncedSearchQuery.toLowerCase();
+      filtered = filtered.filter(m => m.title.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  };
+  }, [MOCK_MOVIES, activeCategory, favorites, history, activeGenre, debouncedSearchQuery, visibleItemsCount]);
 
-  const getDisplayedSeries = () => {
+  const displayedSeries = useMemo(() => {
     let filtered = MOCK_SERIES;
     if (activeCategory === 'fav') {
       filtered = MOCK_SERIES.filter(s => favorites.includes(s.id));
@@ -673,14 +561,11 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     }
 
     if (debouncedSearchQuery.trim() !== '') {
-      filtered = filtered.filter(s => s.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+      const q = debouncedSearchQuery.toLowerCase();
+      filtered = filtered.filter(s => s.title.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  };
-
-  const displayedChannels = getDisplayedChannels();
-  const displayedMovies = getDisplayedMovies();
-  const displayedSeries = getDisplayedSeries();
+  }, [MOCK_SERIES, activeCategory, favorites, history, activeGenre, debouncedSearchQuery, visibleItemsCount]);
 
   const handleScroll = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;
@@ -729,7 +614,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               </div>
               <div className="qr-image-wrapper telegram-qr-wrapper">
                 <img loading="lazy" decoding="async" src="/QR.png" alt="Código QR @thriptw" className="qr-image" 
-                  onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thrip/4.95EUR"} />
+                  onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thrip/6.95EUR"} />
               </div>
             </div>
             <div className="telegram-step">
@@ -831,11 +716,17 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   className={`menu-item focusable ${activeCategory === cat.id ? 'active' : ''}`}
                   onClick={() => {
                     setActiveCategory(cat.id);
-                    setIsDrawerOpen(false);
+                    if (window.innerWidth < 1024) setIsDrawerOpen(false);
+                    
                     setTimeout(() => {
+                      // 1. Reset scroll position
+                      const containers = document.querySelectorAll('.channels-container, .movies-container, .scroll-area');
+                      containers.forEach(c => c.scrollTop = 0);
+                      
+                      // 2. Jump focus
                       const firstItem = document.querySelector('.channels-grid .focusable, .movies-grid .focusable, .sports-agenda-board .focusable');
                       if (firstItem) firstItem.focus();
-                    }, 100);
+                    }, 200);
                   }}
                 >
                   <IconComp className="menu-icon" size={20} />
@@ -857,11 +748,17 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   className={`menu-item focusable ${activeCategory === cat.id ? 'active' : ''}`}
                   onClick={() => {
                     setActiveCategory(cat.id);
-                    setIsDrawerOpen(false);
+                    if (window.innerWidth < 1024) setIsDrawerOpen(false);
+                    
                     setTimeout(() => {
+                      // 1. Reset scroll position of all content containers
+                      const containers = document.querySelectorAll('.channels-container, .movies-container, .scroll-area');
+                      containers.forEach(c => c.scrollTop = 0);
+                      
+                      // 2. Jump focus to first item
                       const firstItem = document.querySelector('.channels-grid .focusable, .movies-grid .focusable, .sports-agenda-board .focusable');
                       if (firstItem) firstItem.focus();
-                    }, 100);
+                    }, 200);
                   }}
                 >
                   <span className="menu-label">{cat.name}</span>
@@ -1479,8 +1376,10 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               if (!series) return null;
               const activeDetails = movieDetails[series.id] || {};
               const isFav = favorites.includes(series.id);
-              const displaySeasons = activeDetails.seasons || series.seasons;
-              const currentSeason = displaySeasons.find(s => s.seasonNumber === activeSeason) || displaySeasons[0] || { seasonNumber: 1, episodes: [] };
+              const displaySeasons = activeDetails.seasons || series.seasons || [];
+              const currentSeason = (displaySeasons && displaySeasons.length > 0) 
+                ? (displaySeasons.find(s => s.seasonNumber === activeSeason) || displaySeasons[0])
+                : { seasonNumber: 1, episodes: [] };
               
               return (
                 <div className="movie-detail-wrapper">
@@ -1630,7 +1529,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
             </div>
 
             <div className="movies-grid">
-               {displayedSeries.map(series => {
+               {displayedSeries.filter(Boolean).map(series => {
                 const isFav = favorites.includes(series.id);
                 return (
                   <div key={series.id} className="movie-poster-card" onClick={() => { setSelectedSeriesId(series.id); setActiveSeason(1); }}>
@@ -1680,7 +1579,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               {!isPremium ? (
                 <div className="payment-action-box fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 0' }}>
                   <button className="btn-play-movie" onClick={handlePayPalPayment} disabled={isVerifying} style={{ width: '100%', maxWidth: '300px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', padding: '0 16px', letterSpacing: '1px', borderRadius: '12px' }}>
-                    <span style={{ fontWeight: '900', fontSize: '26px' }}>4,95 €</span>
+                    <span style={{ fontWeight: '900', fontSize: '26px' }}>6,95 €</span>
                   </button>
                 </div>
               ) : (

@@ -12,11 +12,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron": "electron .",
-    "build:win": "vite build && npx electron-packager . THRIPTV --platform=win32 --arch=x64 --out=release --icon=public/Logo.ico --overwrite"
+    "build:win": "vite build && npx electron-packager . THRIPTW --platform=win32 --arch=x64 --out=release --icon=public/Logo.ico --overwrite --ignore=\"(release|src|android|ios|jdk17|jdk21|release-new|.git|Marca_dump.html)\""
   },
   "build": {
-    "appId": "com.thriptv.desktop",
-    "productName": "THRIPTV",
+    "appId": "com.thriptw.desktop",
+    "productName": "THRIPTW",
     "directories": {
       "output": "release"
     },
@@ -29,7 +29,8 @@
     },
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "server/**/*"
     ]
   },
   "dependencies": {

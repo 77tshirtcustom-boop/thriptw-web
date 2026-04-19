@@ -69,9 +69,12 @@ body.tv-navigation-active .focusable:focus,
 body.tv-navigation-active .focusable:focus-visible {
   outline: 2px solid #f1c40f !important;
   outline-offset: 2px !important;
-  z-index: 9999 !important;
-  background-color: rgba(241, 196, 15, 0.2) !important;
-  color: #f1c40f !important; /* Fuerza iconos amarillos en el menú inferior */
+  background-color: rgba(241, 196, 15, 0.15) !important;
+}
+
+/* En modo PC/Escritorio, el foco es normal y discreto */
+.focusable:focus-visible {
+  outline: none;
 }
 
 /* Cambiar stroke/color a amarillo en iconos (como Lucide-react) al tener foco */

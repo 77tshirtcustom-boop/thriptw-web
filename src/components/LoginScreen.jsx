@@ -192,11 +192,8 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
           {isLoading ? t.btnDecoding : t.btnConnect}
         </button>
 
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-           <span style={{ color: 'var(--primary-red, #e74c3c)', fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
-             Pruébalo 7 días gratis
-           </span>
-        </div>
+        {/* Espaciador inferior */}
+        <div style={{ marginTop: '20px' }}></div>
 
 
       </div>

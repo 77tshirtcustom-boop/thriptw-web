@@ -47,7 +47,10 @@ function App() {
     const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
     
     // Si no es ni TV, ni Android, ni iOS, asumimos que es un PC (Escritorio / Electron)
-    const isDesktopPC = !isTV && !isAndroid && !isIOS;
+    // Si es Windows o Mac, es definitivamente un PC
+    const isWindows = /windows/i.test(navigator.userAgent.toLowerCase());
+    const isMac = /mac/i.test(navigator.userAgent.toLowerCase());
+    const isDesktopPC = isWindows || isMac || (!isTV && !isAndroid && !isIOS);
 
     // Inicializar navegación espacial SOLO si NO estamos en PC
     if (!isDesktopPC) {

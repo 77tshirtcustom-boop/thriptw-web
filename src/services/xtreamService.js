@@ -19,7 +19,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
 
     // 2. Fallback Proxy (Útil solo para PWA / Navegadores donde existe Node backend activo)
     try {
-      const response = await fetch('/api/proxy/xtream', {
+      const response = await fetch('http://localhost:3001/api/proxy/xtream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: baseUrl, username, password, action })
@@ -43,7 +43,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
     const catMap = {};
     const processCats = (arr) => {
       if (Array.isArray(arr)) {
-        arr.forEach(c => { catMap[c.category_id] = c.category_name; });
+        arr.forEach(c => { catMap[c.category_id] = (c.category_name || '').trim(); });
       }
     };
     processCats(liveCat);
@@ -97,15 +97,21 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
       seasons: [{ seasonNumber: 1, episodes: [{ episodeNumber: 1, title: s.name, duration: 'N/A', url: '#' }] }]
     }));
     
-    // Extracción de categorías unificadas
-    const categoriesSet = new Set([
-      ...channels.map(c => c.groupId),
-      ...movies.map(m => m.groupId),
-      ...series.map(s => s.groupId)
-    ]);
-    const categories = Array.from(categoriesSet).map(g => ({ id: g, name: g }));
+    // Extracción de categorías por tipo
+    const getCats = (list) => {
+      const set = new Set();
+      list.forEach(item => { if(item.groupId) set.add(item.groupId); });
+      return Array.from(set).map(g => ({ id: g, name: g }));
+    };
 
-    return { channels, movies, series, categories };
+    return { 
+      channels, 
+      movies, 
+      series, 
+      categories: getCats(channels),
+      movieCategories: getCats(movies),
+      seriesCategories: getCats(series)
+    };
 
   } catch (error) {
     console.error("Fallo maestro conectando a Xtream Codes:", error);

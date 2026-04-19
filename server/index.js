@@ -6,10 +6,15 @@ import fs from 'fs';
 import path from 'path';
 import * as cheerio from 'cheerio';
 
+import { fileURLToPath } from 'url';
+
 dotenv.config();
 
-const CODES_FILE = path.join(process.cwd(), 'server', 'codes.json');
-const SPORTS_FILE = path.join(process.cwd(), 'server', 'sports.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const CODES_FILE = path.join(__dirname, 'codes.json');
+const SPORTS_FILE = path.join(__dirname, 'sports.json');
 
 const getCodes = () => {
   try {

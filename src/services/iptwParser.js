@@ -42,18 +42,47 @@ export const parseM3UString = (m3uString) => {
   const groupsTemp = new Set();
   
   items.forEach((item, index) => {
-    // Determinar categoría por grupo
-    const groupTitle = (item.group && item.group.title) ? item.group.title.toUpperCase() : 'UNCATEGORIZED';
-    groupsTemp.add(groupTitle);
-    
-    // Lógica básica de tipo de contenido
-    const isVOD = item.url && (item.url.includes('/movie/') || item.url.endsWith('.mp4') || item.url.endsWith('.mkv') || groupTitle.includes('VOD') || groupTitle.includes('PELICULA') || groupTitle.includes('MOVI'));
-    const isSeries = item.url && (item.url.includes('/series/') || groupTitle.includes('SERIE'));
-    
-    const id = item.tvg?.id || `ch-${index}`;
+    // Determinar categoría por grupo (Respetando el nombre original del archivo)
+    let groupTitle = (item.group && item.group.title) ? item.group.title.trim() : 'Sin Categoría';
     const name = item.name || 'Unknown Channel';
+    const id = item.tvg?.id || `ch-${index}`;
     const logo = item.tvg?.logo || '';
     const groupId = groupTitle;
+
+    // Lógica de detección de tipo
+    const normalizedGroup = groupTitle.toUpperCase();
+    const url = (item.url || '').toLowerCase();
+
+    // Detección de Series
+    const isSeries = url && (
+      url.includes('/series/') || 
+      normalizedGroup.includes('SERIE') || 
+      normalizedGroup.includes('TEMPORADA') || 
+      normalizedGroup.includes('SEASON') || 
+      normalizedGroup.includes('TV SHOW') ||
+      normalizedGroup.includes('SHOWS') ||
+      /S\d{1,2}/i.test(name) ||          // S01, S1...
+      /T\d{1,2}/i.test(name) ||          // T01, T1...
+      /E\d{1,3}/i.test(name) ||          // E01, E1...
+      /\bCAP\.\d+/i.test(name) ||        // Cap. 1
+      /\bEP\.\d+/i.test(name) ||         // Ep. 1
+      /\bTEM\.\d+/i.test(name)           // Tem. 1
+    );
+
+    // Detección de Películas (VOD)
+    const isVOD = !isSeries && url && (
+      url.includes('/movie/') || 
+      url.endsWith('.mp4') || 
+      url.endsWith('.mkv') || 
+      url.endsWith('.avi') ||
+      normalizedGroup.includes('VOD') || 
+      normalizedGroup.includes('PELICULA') || 
+      normalizedGroup.includes('MOVIE') ||
+      normalizedGroup.includes('CINE') ||
+      normalizedGroup.includes('ESTRENOS') ||
+      normalizedGroup.includes('4K') ||
+      normalizedGroup.includes('FILM')
+    );
     
     if (isSeries) {
       vodSeries.push({
@@ -64,8 +93,8 @@ export const parseM3UString = (m3uString) => {
         imdb: 'N/A',
         year: 'N/A',
         genre: groupId,
-        director: 'Unknown',
-        cast: 'Unknown',
+        director: 'Desconocido',
+        cast: 'Desconocido',
         synopsis: name,
         url: item.url,
         seasons: [{ seasonNumber: 1, episodes: [{ episodeNumber: 1, title: name, duration: 'N/A', url: item.url }] }]
@@ -80,8 +109,8 @@ export const parseM3UString = (m3uString) => {
         year: 'N/A',
         duration: 'N/A',
         genre: groupId,
-        director: 'Unknown',
-        cast: 'Unknown',
+        director: 'Desconocido',
+        cast: 'Desconocido',
         synopsis: name,
         url: item.url,
         backdrop: logo
@@ -99,10 +128,21 @@ export const parseM3UString = (m3uString) => {
     }
   });
 
+  // Generar categorías respetando el orden de cada sección
+  const getCategoriesFor = (itemsList) => {
+    const set = new Set();
+    itemsList.forEach(item => {
+      if (item.groupId) set.add(item.groupId);
+    });
+    return Array.from(set).map(g => ({ id: g, name: g }));
+  };
+
   return {
     channels: liveChannels,
     movies: vodMovies,
     series: vodSeries,
-    categories: Array.from(groupsTemp).map(g => ({ id: g, name: g }))
+    categories: getCategoriesFor(liveChannels),
+    movieCategories: getCategoriesFor(vodMovies),
+    seriesCategories: getCategoriesFor(vodSeries)
   };
 };
