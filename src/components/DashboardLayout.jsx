@@ -186,7 +186,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/sports/schedule');
+        const res = await fetch('https://thriptw-web.onrender.com/api/sports/schedule');
         const data = await res.json();
         if (data.success && data.schedule.length > 0) {
           setLiveSchedule(data.schedule);
@@ -435,7 +435,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     if (!activationCode || activationCode.trim() === '') return;
     setIsVerifying(true);
     try {
-      const resp = await fetch('http://localhost:3001/api/payments/verify', {
+      const resp = await fetch('https://thriptw-web.onrender.com/api/payments/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode: activationCode })
