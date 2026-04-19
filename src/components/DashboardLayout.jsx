@@ -218,7 +218,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('http://localhost:3001/api/proxy/xtream', {
+          fetch('https://thriptw-web.onrender.com/api/proxy/xtream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -262,7 +262,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('http://localhost:3001/api/proxy/xtream', {
+          fetch('https://thriptw-web.onrender.com/api/proxy/xtream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
