@@ -837,13 +837,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                               <div className="match-day-col" style={{ borderRight: '1px solid rgba(255,255,255,0.1)', minWidth: '130px', height: '100%' }}></div>
                             )}
                             
-                            <div className="match-tournament-col" style={{ display: 'flex', alignItems: 'center', gap: '10px', borderRight: '1px solid rgba(255,255,255,0.1)', minWidth: '140px', paddingLeft: '20px', paddingRight: '10px', height: '100%' }}>
-                              {match.tournamentLogo && <img loading="lazy" decoding="async" src={match.tournamentLogo} alt="Torneo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />}
-                              {match.tournament && <span className="match-time-sub tournament-name" style={{ color: '#f1c40f', fontWeight: '800', fontSize: '18px', textTransform: 'uppercase', margin: 0, padding: 0, letterSpacing: '0.5px' }}>{match.tournament}</span>}
+                            <div className="match-tournament-col" style={{ display: 'flex', alignItems: 'center', gap: '12px', borderRight: '1px solid rgba(255,255,255,0.1)', minWidth: '220px', paddingLeft: '20px', paddingRight: '10px', height: '100%' }}>
+                              {match.tournamentLogo && <img loading="lazy" decoding="async" src={match.tournamentLogo} alt="Torneo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />}
+                              {match.tournament && <span className="match-time-sub tournament-name" style={{ color: '#f1c40f', fontWeight: '800', fontSize: '17px', textTransform: 'uppercase', margin: 0, padding: 0, letterSpacing: '1px' }}>{match.tournament}</span>}
                             </div>
 
-                            <div className="match-teams-col" style={{ display: 'flex', alignItems: 'center', paddingLeft: '10px', flex: 1 }}>
-                              <span style={{ color: 'white', fontWeight: '800', fontSize: '16px', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0, padding: 0 }}>{(match.title || '').replace(/\s+vs\s+/gi, ' - ')}</span>
+                            <div className="match-teams-col" style={{ display: 'flex', alignItems: 'center', paddingLeft: '25px', flex: 1, overflow: 'hidden' }}>
+                              <span style={{ color: 'white', fontWeight: '700', fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0, padding: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(match.title || '').replace(/\s+vs\s+/gi, ' - ')}</span>
                             </div>
                           </div>
 
