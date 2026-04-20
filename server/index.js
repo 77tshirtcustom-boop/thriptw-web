@@ -135,7 +135,7 @@ app.get('/api/proxy/stream', async (req, res) => {
       });
       let content = response.data;
       
-      const protocol = req.protocol;
+      const protocol = 'https'; // Forzamos https para evitar Mixed Content en los fragmentos
       const host = req.get('host');
       const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
 
