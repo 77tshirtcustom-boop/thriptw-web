@@ -34,6 +34,8 @@ import {
 import './DashboardLayout.css';
 import VideoPlayer from './VideoPlayer';
 import { translations } from '../i18n/translations';
+// -- CONFIGURACIÓN DE PRODUCCIÓN --
+const API_BASE_URL = window.location.origin;
 
 // -- DATOS DEL SISTEMA (FIJOS) --
 const SYSTEM_CATEGORIES = [
@@ -186,7 +188,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const res = await fetch('https://thriptw-web.onrender.com/api/sports/schedule');
+        const res = await fetch(`${API_BASE_URL}/api/sports/schedule`);
         const data = await res.json();
         if (data.success && data.schedule.length > 0) {
           setLiveSchedule(data.schedule);
@@ -218,7 +220,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('https://thriptw-web.onrender.com/api/proxy/xtream', {
+          fetch(`${API_BASE_URL}/api/proxy/xtream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -262,7 +264,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('https://thriptw-web.onrender.com/api/proxy/xtream', {
+          fetch(`${API_BASE_URL}/api/proxy/xtream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -435,7 +437,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     if (!activationCode || activationCode.trim() === '') return;
     setIsVerifying(true);
     try {
-      const resp = await fetch('https://thriptw-web.onrender.com/api/payments/verify', {
+      const resp = await fetch(`${API_BASE_URL}/api/payments/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode: activationCode })

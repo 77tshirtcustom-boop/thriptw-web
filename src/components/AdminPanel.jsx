@@ -16,9 +16,11 @@ const AdminPanel = () => {
     day: '', time: '', tournament: '', tournamentLogo: '', channelsList: ''
   });
 
+  const API_BASE_URL = window.location.origin;
+
   const fetchCodes = async (pass) => {
     try {
-      const resp = await fetch('/api/admin/codes', {
+      const resp = await fetch(`${API_BASE_URL}/api/admin/codes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pass })
@@ -38,7 +40,7 @@ const AdminPanel = () => {
 
   const fetchSports = async () => {
     try {
-        const resp = await fetch('/api/sports/schedule');
+        const resp = await fetch(`${API_BASE_URL}/api/sports/schedule`);
         const data = await resp.json();
         if (resp.ok) setSportsList(data.schedule || []);
     } catch (err) {}
@@ -56,7 +58,7 @@ const AdminPanel = () => {
         }
       };
       
-      const resp = await fetch('/api/sports/schedule', {
+      const resp = await fetch(`${API_BASE_URL}/api/sports/schedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj)
@@ -71,7 +73,7 @@ const AdminPanel = () => {
   const handleDeleteEvent = async (id) => {
     // Alerta nativa retirada por bloqueos locales en el browser del usuario
     try {
-      const resp = await fetch(`/api/sports/schedule/${id}`, {
+      const resp = await fetch(`${API_BASE_URL}/api/sports/schedule/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -89,7 +91,7 @@ const AdminPanel = () => {
     if (isGenerating) return;
     setIsGenerating(true);
     try {
-      const resp = await fetch('/api/admin/generate-code', {
+      const resp = await fetch(`${API_BASE_URL}/api/admin/generate-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })

@@ -254,6 +254,7 @@ const translateToSpanish = async (text) => {
 
 const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }) => {
   const tr = translations[appLanguage] || translations.es;
+  const API_BASE_URL = 'https://thriptw.com';
 
   const MOCK_CHANNELS = playlistData && playlistData.channels?.length > 0 ? playlistData.channels : STATIC_MOCK_CHANNELS;
   const MOCK_MOVIES = playlistData && playlistData.movies?.length > 0 ? playlistData.movies : STATIC_MOCK_MOVIES;
@@ -318,7 +319,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const res = await fetch('/api/sports/schedule');
+        const res = await fetch(`${API_BASE_URL}/api/sports/schedule`);
         const data = await res.json();
         if (data.success && data.schedule.length > 0) {
           setLiveSchedule(data.schedule);
@@ -350,7 +351,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('/api/proxy/xtream', {
+          fetch(`${API_BASE_URL}/api/proxy/xtream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -394,7 +395,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
         const xtPass = localStorage.getItem('thriptw_xtPass');
         
         if (xtUrl && xtUser && xtPass) {
-          fetch('/api/proxy/xtream', {
+          fetch(`${API_BASE_URL}/api/proxy/xtream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -604,7 +605,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     if (!activationCode || activationCode.trim() === '') return;
     setIsVerifying(true);
     try {
-      const resp = await fetch('/api/payments/verify', {
+      const resp = await fetch(`${API_BASE_URL}/api/payments/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pinCode: activationCode })

@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import './VideoPlayer.css';
 
+const API_BASE_URL = window.location.origin;
+
 const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -47,15 +49,17 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
     setError(null);
     setIsLoading(true);
     setIsPlaying(false);
-
+    
     let hls;
     let streamUrl = media.url;
+    const isHTTPS = window.location.protocol === 'https:';
+    const isWeb = window.location.protocol !== 'file:';
 
-    // -- MEJORA DE CONTENIDO MIXTO --
-    // Si estamos en HTTPS y el stream es HTTP, intentamos forzar HTTPS
-    if (window.location.protocol === 'https:' && streamUrl.startsWith('http:')) {
-      console.log("Detectado Contenido Mixto (HTTPS -> HTTP). Intentando upgrade a HTTPS...");
-      streamUrl = streamUrl.replace('http:', 'https:');
+    // -- ACTIVACIÓN DEL PUENTE DE VÍDEO (Modo Automático) --
+    if (isWeb && isHTTPS && streamUrl.startsWith('http:')) {
+      console.log("Activando Puente de Vídeo para saltar Mixed Content...");
+      // Usamos el proxy de nuestro servidor para convertir el stream en HTTPS "falso"
+      streamUrl = `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(streamUrl)}`;
     }
 
     const isDirectVideo = streamUrl.includes('.mp4') || streamUrl.includes('.mkv') || streamUrl.includes('.avi');
@@ -76,6 +80,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
           console.error("Play failed even muted:", err);
           setIsPlaying(false);
           setIsLoading(false);
+          setError("El navegador bloqueó la reproducción automática. Haz clic en el botón Play.");
         });
       });
     };
@@ -85,6 +90,14 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
         maxBufferLength: 30,
         maxMaxBufferLength: 60,
         enableWorker: true,
+        xhrSetup: (xhr) => {
+          xhr.withCredentials = false; // Importante para algunos servidores IPTV
+        },
+        // Configuración para mayor tolerancia en redes lentas
+        manifestLoadingTimeOut: 20000,
+        manifestLoadingMaxRetry: 4,
+        levelLoadingTimeOut: 20000,
+        levelLoadingMaxRetry: 4
       });
       
       hls.loadSource(streamUrl);
@@ -99,9 +112,15 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error("Fatal network error encountered, try to recover");
-              hls.startLoad();
-              setError("Error de red. Asegúrate de que el enlace es válido y permite CORS.");
+              console.error("Fatal network error encountered");
+              if (isHTTPS && streamUrl.startsWith('https:')) {
+                // Si falló el upgrade a HTTPS, intentamos volver a HTTP y avisar al usuario
+                console.log("El upgrade a HTTPS falló. Reintentando con HTTP original...");
+                setError("Bloqueo de Seguridad: Tu servidor de canales no soporta HTTPS. Para ver este canal en la web, debes habilitar 'Contenido no seguro' en los ajustes de tu navegador (click en el candado de arriba).");
+              } else {
+                setError("Error de conexión con el servidor de canales. Verifica tu lista o conexión.");
+              }
+              hls.destroy();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.error("Fatal media error encountered, try to recover");
@@ -109,7 +128,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
               break;
             default:
               hls.destroy();
-              setError("Error fatal en la reproducción.");
+              setError("Error crítico de reproducción. Formato no soportado por el navegador.");
               break;
           }
           setIsLoading(false);
@@ -122,7 +141,11 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
       };
       video.onerror = () => {
         console.error("Native Video Error:", video.error);
-        setError("El navegador no puede reproducir este video. Puede ser un problema de Mixed Content o Codecs.");
+        if (isHTTPS && streamUrl.startsWith('http:')) {
+           setError("Contenido Bloqueado: Este navegador no permite reproducir canales HTTP en una web HTTPS. Usa la App .EXE o habilita 'Contenido no seguro' en el navegador.");
+        } else {
+           setError("Error del reproductor nativo. Problema de Codecs o Mixed Content.");
+        }
         setIsLoading(false);
       };
     } else {

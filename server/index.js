@@ -104,6 +104,78 @@ app.post('/api/proxy/xtream', async (req, res) => {
   }
 });
 
+// PROXY GENÉRICO PARA LISTAS M3U
+app.post('/api/proxy/m3u', async (req, res) => {
+  const { url } = req.body;
+  try {
+    const response = await axios.get(url);
+    res.send(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Proxy Request Failed', details: error.message });
+  }
+});
+
+// PUENTE DE VÍDEO (Stream Proxy) - Para evitar Mixed Content en Web
+app.get('/api/proxy/stream', async (req, res) => {
+  const streamUrl = req.query.url;
+  if (!streamUrl) return res.status(400).send('URL faltante');
+
+  try {
+    const isM3U8 = streamUrl.includes('.m3u8') || streamUrl.includes('m3u8');
+    
+    if (isM3U8) {
+      // MODO HLS: Descargamos y reescribimos el manifiesto para que los fragmentos (.ts) también pasen por el proxy
+      const response = await axios.get(streamUrl, { timeout: 10000 });
+      let content = response.data;
+      
+      const urlObj = new URL(streamUrl);
+      const baseUrl = urlObj.origin + urlObj.pathname.substring(0, urlObj.pathname.lastIndexOf('/') + 1);
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
+
+      // 1. Reescribir URLs absolutas HTTP
+      content = content.replace(/http:\/\/[^\s]+/g, (match) => {
+        return `${proxyBase}${encodeURIComponent(match)}`;
+      });
+
+      // 2. Reescribir URLs relativas
+      const lines = content.split('\n');
+      const rewrittenLines = lines.map(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('http')) {
+          // Es un segmento relativo, lo convertimos en absoluto y lo pasamos por el proxy
+          return `${proxyBase}${encodeURIComponent(baseUrl + trimmed)}`;
+        }
+        return line;
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      return res.send(rewrittenLines.join('\n'));
+
+    } else {
+      // MODO VOD: Pipeamos el vídeo directamente (MP4, MKV, etc.)
+      const response = await axios({
+        method: 'get',
+        url: streamUrl,
+        responseType: 'stream',
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0'
+        }
+      });
+
+      if (response.headers['content-type']) res.setHeader('Content-Type', response.headers['content-type']);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      response.data.pipe(res);
+    }
+  } catch (error) {
+    console.error('Error en Puente de Vídeo:', error.message);
+    res.status(500).send('Error al puentear el stream: ' + error.message);
+  }
+});
+
 // -------- SISTEMA DE PINES (TELEGRAM VIP) --------
 app.post('/api/payments/verify', (req, res) => {
   const { pinCode } = req.body;

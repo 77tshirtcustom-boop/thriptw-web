@@ -5,6 +5,8 @@ import { fetchXtreamData } from '../services/xtreamService';
 import { translations } from '../i18n/translations';
 import './LoginScreen.css';
 
+const API_BASE_URL = window.location.origin;
+
 const LoginScreen = ({ onLogin, appLanguage }) => {
   const t = translations[appLanguage].login;
   const [activeTab, setActiveTab] = useState('xtream'); // 'xtream' | 'm3u'
@@ -19,26 +21,45 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    const savedUrl = localStorage.getItem('thriptw_xtUrl');
-    const savedUser = localStorage.getItem('thriptw_xtUser');
-    const savedPass = localStorage.getItem('thriptw_xtPass');
-    if (savedUrl && savedUser && savedPass) {
-      setXtUrl(savedUrl);
-      setXtUser(savedUser);
-      setXtPass(savedPass);
+    // 1. Detección de parámetros en la URL (para enlaces inteligentes)
+    const params = new URLSearchParams(window.location.search);
+    const urlUser = params.get('user') || params.get('u');
+    const urlPass = params.get('pass') || params.get('p');
+    const urlServer = params.get('url') || params.get('s');
+
+    if (urlUser) setXtUser(urlUser);
+    if (urlPass) setXtPass(urlPass);
+    if (urlServer) setXtUrl(urlServer);
+
+    // 2. Auto-login si hay datos (priorizando URL o localStorage)
+    const finalUrl = urlServer || localStorage.getItem('thriptw_xtUrl');
+    const finalUser = urlUser || localStorage.getItem('thriptw_xtUser');
+    const finalPass = urlPass || localStorage.getItem('thriptw_xtPass');
+
+    if (finalUrl && finalUser && finalPass) {
+      if (!urlUser) { // Solo rellenamos si no viene de la URL
+        setXtUrl(finalUrl);
+        setXtUser(finalUser);
+        setXtPass(finalPass);
+      }
       
       const autoConnect = async () => {
         setIsLoading(true);
         try {
-          const xtreamData = await fetchXtreamData(savedUrl, savedUser, savedPass);
+          const xtreamData = await fetchXtreamData(finalUrl, finalUser, finalPass);
           if (xtreamData.channels.length === 0 && xtreamData.movies.length === 0 && xtreamData.series.length === 0) {
             setErrorMsg(t.errorNoChannels);
             setIsLoading(false);
             return;
           }
+          // Guardar en local para futuras visitas sin parámetros
+          localStorage.setItem('thriptw_xtUrl', finalUrl);
+          localStorage.setItem('thriptw_xtUser', finalUser);
+          localStorage.setItem('thriptw_xtPass', finalPass);
+          
           onLogin({ type: 'xtream', data: xtreamData });
         } catch (err) {
-          setErrorMsg("Error reconectando automáticamete: " + err.message);
+          setErrorMsg("Error de conexión: " + err.message);
           setIsLoading(false);
         }
       };
@@ -111,6 +132,40 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
        setErrorMsg(t.errorFillM3U);
        return;
     }
+
+    if (activeTab === 'm3u') {
+      setIsLoading(true);
+      setErrorMsg('');
+      try {
+        // Intento directo
+        let response;
+        try {
+          response = await fetch(m3uUrl);
+        } catch (e) {
+          // Intento vía proxy
+          response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: m3uUrl })
+          });
+        }
+        
+        if (!response.ok) throw new Error('No se pudo descargar la lista M3U');
+        const text = await response.text();
+        const parsedData = parseM3UString(text);
+        
+        if (parsedData.channels.length === 0 && parsedData.movies.length === 0 && parsedData.series.length === 0) {
+          throw new Error('La lista M3U está vacía o tiene un formato no válido.');
+        }
+
+        onLogin({ type: 'm3u', data: parsedData });
+      } catch (err) {
+        setErrorMsg('Error al cargar la lista M3U: ' + err.message);
+        setIsLoading(false);
+      }
+      return;
+    }
+
     setErrorMsg(t.warningM3U);
   };
 
@@ -190,6 +245,16 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
         <button className="submit-btn focusable" type="button" onClick={handleUrlLogin} disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
           <LogIn className="submit-icon" size={20} />
           {isLoading ? t.btnDecoding : t.btnConnect}
+        </button>
+
+        <button 
+          className="submit-btn focusable" 
+          type="button" 
+          onClick={() => onLogin({ type: 'guest', data: { channels: [], movies: [], series: [], categories: [] } })} 
+          style={{ marginTop: '15px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#aaa' }}
+        >
+          <Tv className="submit-icon" size={20} />
+          Entrar sin lista
         </button>
 
         {/* Espaciador inferior */}

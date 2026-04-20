@@ -1,3 +1,5 @@
+const API_BASE_URL = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
+
 export const fetchXtreamData = async (serverUrl, username, password) => {
   const baseUrl = serverUrl.replace(/\/+$/, '');
 
@@ -19,7 +21,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
 
     // 2. Fallback Proxy (Útil solo para PWA / Navegadores donde existe Node backend activo)
     try {
-      const response = await fetch('http://localhost:3001/api/proxy/xtream', {
+      const response = await fetch(`${API_BASE_URL}/api/proxy/xtream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: baseUrl, username, password, action })

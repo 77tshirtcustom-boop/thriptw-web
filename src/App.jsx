@@ -52,16 +52,14 @@ function App() {
     const isMac = /mac/i.test(navigator.userAgent.toLowerCase());
     const isDesktopPC = isWindows || isMac || (!isTV && !isAndroid && !isIOS);
 
-    // Inicializar navegación espacial SOLO si NO estamos en PC
-    if (!isDesktopPC) {
-      document.body.classList.add('tv-navigation-active');
-      SpatialNavigation.init();
-      SpatialNavigation.add({
-        selector: '.focusable'
-      });
-      SpatialNavigation.makeFocusable();
-      SpatialNavigation.focus();
-    }
+    // Habilitar navegación espacial (Smart TV / Remoto) para todos los usuarios web
+    document.body.classList.add('tv-navigation-active');
+    SpatialNavigation.init();
+    SpatialNavigation.add({
+      selector: '.focusable'
+    });
+    SpatialNavigation.makeFocusable();
+    SpatialNavigation.focus();
 
     const handleKeyDown = (e) => {
       // Tizen Return (10009), WebOS Back (461), PC Escape (27)
@@ -91,23 +89,19 @@ function App() {
     };
 
     let observer;
-    if (!isDesktopPC) {
-      window.addEventListener('sn:navigatefailed', handleSnNavigateFailed);
+    window.addEventListener('sn:navigatefailed', handleSnNavigateFailed);
 
-      // Observador para elementos dinámicos de React
-      observer = new MutationObserver(() => {
-        SpatialNavigation.makeFocusable();
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+    // Observador para elementos dinámicos de React
+    observer = new MutationObserver(() => {
+      SpatialNavigation.makeFocusable();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      if (!isDesktopPC) {
-        window.removeEventListener('sn:navigatefailed', handleSnNavigateFailed);
-        if (observer) observer.disconnect();
-        SpatialNavigation.uninit();
-      }
+      window.removeEventListener('sn:navigatefailed', handleSnNavigateFailed);
+      if (observer) observer.disconnect();
+      SpatialNavigation.uninit();
     };
   }, []);
 
