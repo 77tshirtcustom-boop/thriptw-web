@@ -16,7 +16,8 @@ import {
 } from 'lucide-react';
 import './VideoPlayer.css';
 
-const API_BASE_URL = 'https://thriptw-web.onrender.com';
+const isWebPlayer = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
+const API_BASE_URL = isWebPlayer ? window.location.origin : 'https://thriptw-web.onrender.com';
 
 const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
   const videoRef = useRef(null);

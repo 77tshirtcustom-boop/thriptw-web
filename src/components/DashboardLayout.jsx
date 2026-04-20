@@ -34,8 +34,9 @@ import {
 import './DashboardLayout.css';
 import VideoPlayer from './VideoPlayer';
 import { translations } from '../i18n/translations';
-// -- CONFIGURACIÓN DE PRODUCCIÓN CENTRALIZADA --
-const API_BASE_URL = 'https://thriptw-web.onrender.com';
+// -- CONFIGURACIÓN DE PRODUCCIÓN INTELIGENTE --
+const isWeb = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
+const API_BASE_URL = isWeb ? window.location.origin : 'https://thriptw-web.onrender.com';
 
 // -- DATOS DEL SISTEMA (FIJOS) --
 const SYSTEM_CATEGORIES = [

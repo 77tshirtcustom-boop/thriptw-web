@@ -16,7 +16,8 @@ const AdminPanel = () => {
     day: '', time: '', tournament: '', tournamentLogo: '', channelsList: ''
   });
 
-  const API_BASE_URL = 'https://thriptw-web.onrender.com';
+  const isWeb = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
+  const API_BASE_URL = isWeb ? window.location.origin : 'https://thriptw-web.onrender.com';
 
   const fetchCodes = async (pass) => {
     try {

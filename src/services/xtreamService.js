@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://thriptw-web.onrender.com';
+const isWebSvc = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
+const API_BASE_URL = isWebSvc ? window.location.origin : 'https://thriptw-web.onrender.com';
 
 export const fetchXtreamData = async (serverUrl, username, password) => {
   const baseUrl = serverUrl.replace(/\/+$/, '');
