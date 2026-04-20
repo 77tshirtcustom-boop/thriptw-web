@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://thriptw.com';
+const API_BASE_URL = 'https://thriptw-web.onrender.com';
 
 export const fetchXtreamData = async (serverUrl, username, password) => {
   const baseUrl = serverUrl.replace(/\/+$/, '');

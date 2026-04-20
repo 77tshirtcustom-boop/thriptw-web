@@ -16,7 +16,7 @@ const AdminPanel = () => {
     day: '', time: '', tournament: '', tournamentLogo: '', channelsList: ''
   });
 
-  const API_BASE_URL = 'https://thriptw.com';
+  const API_BASE_URL = 'https://thriptw-web.onrender.com';
 
   const fetchCodes = async (pass) => {
     try {

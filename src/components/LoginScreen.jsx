@@ -5,7 +5,7 @@ import { fetchXtreamData } from '../services/xtreamService';
 import { translations } from '../i18n/translations';
 import './LoginScreen.css';
 
-const API_BASE_URL = 'https://thriptw.com';
+const API_BASE_URL = 'https://thriptw-web.onrender.com';
 
 const LoginScreen = ({ onLogin, appLanguage }) => {
   const t = translations[appLanguage].login;
