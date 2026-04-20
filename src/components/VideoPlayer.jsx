@@ -94,53 +94,42 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
       });
     };
 
-    if (Hls.isSupported() && isM3U8) {
+    // Detección de Smart TV para priorizar reproducción nativa
+    const isSmartTV = /SmartTV|LG|Samsung|Tizen|WebOS|Viera|BRAVIA/i.test(navigator.userAgent);
+    const canPlayNatively = video.canPlayType('application/vnd.apple.mpegurl') || video.canPlayType('application/x-mpegURL');
+
+    if (isM3U8 && canPlayNatively && (isSmartTV || !Hls.isSupported())) {
+      // MODO NATIVO (Ideal para LG, Samsung y Safari)
+      console.log("Usando reproductor nativo de la Smart TV...");
+      video.src = streamUrl;
+      video.addEventListener('loadedmetadata', handlePlay);
+    } else if (Hls.isSupported() && isM3U8) {
+      // MODO HLS.JS (Para Chrome y navegadores sin soporte nativo)
       hls = new Hls({
         maxBufferLength: 30,
         maxMaxBufferLength: 60,
-        enableWorker: true,
-        xhrSetup: (xhr) => {
-          xhr.withCredentials = false; // Importante para algunos servidores IPTV
-        },
-        // Configuración para mayor tolerancia en redes lentas
-        manifestLoadingTimeOut: 20000,
-        manifestLoadingMaxRetry: 4,
-        levelLoadingTimeOut: 20000,
-        levelLoadingMaxRetry: 4
+        startLevel: -1,
+        enableWorker: true
       });
-      
       hls.loadSource(streamUrl);
       hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, handlePlay);
       
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        handlePlay();
-      });
-
       hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error("HLS Error:", data);
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error("Fatal network error encountered");
-              if (isHTTPS && streamUrl.startsWith('https:')) {
-                // Si falló el upgrade a HTTPS, intentamos volver a HTTP y avisar al usuario
-                console.log("El upgrade a HTTPS falló. Reintentando con HTTP original...");
-                setError("Bloqueo de Seguridad: Tu servidor de canales no soporta HTTPS. Para ver este canal en la web, debes habilitar 'Contenido no seguro' en los ajustes de tu navegador (click en el candado de arriba).");
-              } else {
-                setError("Error de conexión con el servidor de canales. Verifica tu lista o conexión.");
-              }
-              hls.destroy();
+              console.error("Error de red HLS, intentando recuperar...");
+              hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
-              console.error("Fatal media error encountered, try to recover");
+              console.error("Error de medios HLS, intentando recuperar...");
               hls.recoverMediaError();
               break;
             default:
-              hls.destroy();
-              setError("Error crítico de reproducción. Formato no soportado por el navegador.");
+              console.error("Error fatal HLS, no se puede recuperar.");
               break;
           }
-          setIsLoading(false);
         }
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl') || isDirectVideo) {
