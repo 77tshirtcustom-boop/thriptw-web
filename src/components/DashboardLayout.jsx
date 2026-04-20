@@ -34,8 +34,8 @@ import {
 import './DashboardLayout.css';
 import VideoPlayer from './VideoPlayer';
 import { translations } from '../i18n/translations';
-// -- CONFIGURACIÓN DE PRODUCCIÓN --
-const API_BASE_URL = window.location.origin;
+// -- CONFIGURACIÓN DE PRODUCCIÓN CENTRALIZADA --
+const API_BASE_URL = 'https://thriptw.com';
 
 // -- DATOS DEL SISTEMA (FIJOS) --
 const SYSTEM_CATEGORIES = [

@@ -124,30 +124,40 @@ app.get('/api/proxy/stream', async (req, res) => {
     const isM3U8 = streamUrl.includes('.m3u8') || streamUrl.includes('m3u8');
     
     if (isM3U8) {
-      // MODO HLS: Descargamos y reescribimos el manifiesto para que los fragmentos (.ts) también pasen por el proxy
-      const response = await axios.get(streamUrl, { timeout: 10000 });
+      // MODO HLS: Descargamos y reescribimos el manifiesto
+      const response = await axios.get(streamUrl, { 
+        timeout: 10000,
+        responseType: 'text',
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
       let content = response.data;
       
       const urlObj = new URL(streamUrl);
-      const baseUrl = urlObj.origin + urlObj.pathname.substring(0, urlObj.pathname.lastIndexOf('/') + 1);
       const protocol = req.protocol;
       const host = req.get('host');
       const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
 
-      // 1. Reescribir URLs absolutas HTTP
-      content = content.replace(/http:\/\/[^\s]+/g, (match) => {
-        return `${proxyBase}${encodeURIComponent(match)}`;
-      });
+      // Intentar obtener la base URL del stream (todo hasta la última barra)
+      const baseUrl = streamUrl.substring(0, streamUrl.lastIndexOf('/') + 1);
 
-      // 2. Reescribir URLs relativas
-      const lines = content.split('\n');
+      const lines = content.split(/\r?\n/);
       const rewrittenLines = lines.map(line => {
         const trimmed = line.trim();
-        if (trimmed && !trimmed.startsWith('#') && !trimmed.startsWith('http')) {
-          // Es un segmento relativo, lo convertimos en absoluto y lo pasamos por el proxy
-          return `${proxyBase}${encodeURIComponent(baseUrl + trimmed)}`;
+        if (!trimmed) return line;
+        if (trimmed.startsWith('#')) {
+          // Si es un tag que contiene una URL (como EXT-X-KEY o EXT-X-MAP)
+          if (trimmed.includes('URI=')) {
+            return trimmed.replace(/URI="([^"]+)"/, (match, uri) => {
+              const fullUri = uri.startsWith('http') ? uri : baseUrl + uri;
+              return `URI="${proxyBase}${encodeURIComponent(fullUri)}"`;
+            });
+          }
+          return line;
         }
-        return line;
+        
+        // Es un segmento o un sub-manifiesto
+        const fullUrl = trimmed.startsWith('http') ? trimmed : baseUrl + trimmed;
+        return `${proxyBase}${encodeURIComponent(fullUrl)}`;
       });
 
       res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');

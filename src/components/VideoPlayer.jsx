@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import './VideoPlayer.css';
 
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = 'https://thriptw.com';
 
 const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
   const videoRef = useRef(null);
@@ -62,7 +62,15 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
       streamUrl = `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(streamUrl)}`;
     }
 
-    const isDirectVideo = streamUrl.includes('.mp4') || streamUrl.includes('.mkv') || streamUrl.includes('.avi');
+    const isDirectVideo = 
+      streamUrl.includes('.mp4') || 
+      streamUrl.includes('.mkv') || 
+      streamUrl.includes('.avi') || 
+      streamUrl.includes('.ts') || 
+      streamUrl.includes('.webm') ||
+      streamUrl.includes('.mov');
+
+    const isM3U8 = streamUrl.includes('.m3u8') || streamUrl.includes('m3u8');
 
     const handlePlay = () => {
       video.play().then(() => {
@@ -85,7 +93,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
       });
     };
 
-    if (Hls.isSupported() && !isDirectVideo) {
+    if (Hls.isSupported() && isM3U8) {
       hls = new Hls({
         maxBufferLength: 30,
         maxMaxBufferLength: 60,

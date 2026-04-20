@@ -1,4 +1,4 @@
-const API_BASE_URL = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
+const API_BASE_URL = 'https://thriptw.com';
 
 export const fetchXtreamData = async (serverUrl, username, password) => {
   const baseUrl = serverUrl.replace(/\/+$/, '');
