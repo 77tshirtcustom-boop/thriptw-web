@@ -126,57 +126,74 @@ app.get('/api/proxy/stream', async (req, res) => {
     if (isM3U8) {
       // MODO HLS: Descargamos y reescribimos el manifiesto
       const response = await axios.get(streamUrl, { 
-        timeout: 10000,
+        timeout: 12000,
         responseType: 'text',
-        headers: { 'User-Agent': 'Mozilla/5.0' }
+        headers: { 
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': '*/*'
+        }
       });
       let content = response.data;
       
-      const urlObj = new URL(streamUrl);
       const protocol = req.protocol;
       const host = req.get('host');
       const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
 
-      // Intentar obtener la base URL del stream (todo hasta la última barra)
-      const baseUrl = streamUrl.substring(0, streamUrl.lastIndexOf('/') + 1);
+      // Base URL para enlaces relativos
+      const urlObj = new URL(streamUrl);
+      const baseUrlOnly = urlObj.origin + urlObj.pathname.substring(0, urlObj.pathname.lastIndexOf('/') + 1);
 
       const lines = content.split(/\r?\n/);
       const rewrittenLines = lines.map(line => {
         const trimmed = line.trim();
         if (!trimmed) return line;
+        
         if (trimmed.startsWith('#')) {
-          // Si es un tag que contiene una URL (como EXT-X-KEY o EXT-X-MAP)
           if (trimmed.includes('URI=')) {
             return trimmed.replace(/URI="([^"]+)"/, (match, uri) => {
-              const fullUri = uri.startsWith('http') ? uri : baseUrl + uri;
+              let fullUri = uri;
+              if (!uri.startsWith('http')) {
+                fullUri = uri.startsWith('/') ? urlObj.origin + uri : baseUrlOnly + uri;
+              }
               return `URI="${proxyBase}${encodeURIComponent(fullUri)}"`;
             });
           }
           return line;
         }
         
-        // Es un segmento o un sub-manifiesto
-        const fullUrl = trimmed.startsWith('http') ? trimmed : baseUrl + trimmed;
+        // Es un segmento o sub-manifiesto
+        let fullUrl = trimmed;
+        if (!trimmed.startsWith('http')) {
+          fullUrl = trimmed.startsWith('/') ? urlObj.origin + trimmed : baseUrlOnly + trimmed;
+        }
         return `${proxyBase}${encodeURIComponent(fullUrl)}`;
       });
 
-      res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+      res.setHeader('Content-Type', 'application/x-mpegURL');
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache');
       return res.send(rewrittenLines.join('\n'));
 
     } else {
-      // MODO VOD: Pipeamos el vídeo directamente (MP4, MKV, etc.)
+      // MODO VOD: Pipeamos el vídeo directamente
       const response = await axios({
         method: 'get',
         url: streamUrl,
         responseType: 'stream',
-        timeout: 15000,
+        timeout: 20000,
         headers: {
-          'User-Agent': 'Mozilla/5.0'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': '*/*',
+          'Range': req.headers.range || 'bytes=0-'
         }
       });
 
+      // Copiar cabeceras importantes
       if (response.headers['content-type']) res.setHeader('Content-Type', response.headers['content-type']);
+      if (response.headers['content-length']) res.setHeader('Content-Length', response.headers['content-length']);
+      if (response.headers['content-range']) res.setHeader('Content-Range', response.headers['content-range']);
+      if (response.headers['accept-ranges']) res.setHeader('Accept-Ranges', response.headers['accept-ranges']);
+      
       res.setHeader('Access-Control-Allow-Origin', '*');
       response.data.pipe(res);
     }
