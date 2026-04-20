@@ -125,17 +125,20 @@ app.get('/api/proxy/stream', async (req, res) => {
     
     if (isM3U8) {
       // MODO HLS: Descargamos y reescribimos el manifiesto
+      const streamUrlObj = new URL(streamUrl);
       const response = await axios.get(streamUrl, { 
         timeout: 12000,
         responseType: 'text',
         headers: { 
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': '*/*'
+          'Accept': '*/*',
+          'Referer': streamUrlObj.origin + '/',
+          'Origin': streamUrlObj.origin
         }
       });
       let content = response.data;
       
-      const protocol = 'https'; // Forzamos https para evitar Mixed Content en los fragmentos
+      const protocol = 'https'; 
       const host = req.get('host');
       const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
 
@@ -175,15 +178,18 @@ app.get('/api/proxy/stream', async (req, res) => {
       return res.send(rewrittenLines.join('\n'));
 
     } else {
-      // MODO VOD: Pipeamos el vídeo directamente
+      // MODO VOD o Segmentos HLS: Pipeamos el vídeo directamente
+      const segUrlObj = new URL(streamUrl);
       const response = await axios({
         method: 'get',
         url: streamUrl,
         responseType: 'stream',
-        timeout: 20000,
+        timeout: 25000,
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Accept': '*/*',
+          'Referer': segUrlObj.origin + '/',
+          'Origin': segUrlObj.origin,
           'Range': req.headers.range || 'bytes=0-'
         }
       });
