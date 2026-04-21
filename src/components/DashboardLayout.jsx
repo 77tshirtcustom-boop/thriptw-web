@@ -55,34 +55,7 @@ const STATIC_MOCK_CHANNELS = [];
 const STATIC_MOCK_MOVIES = [];
 const STATIC_MOCK_SERIES = [];
 
-const MOCK_SPORTS_AGENDA = [
-  {
-    id: 'mock-1',
-    sportType: 'football',
-    title: 'Real Madrid - FC Barcelona',
-    time: '21:00',
-    day: 'Hoy',
-    tournament: 'La Liga',
-    tournamentLogo: 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg',
-    channelsList: ['DAZN LaLiga', 'Movistar+'],
-    team1: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
-    team2: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg',
-    bgImage: 'https://wallpapercave.com/wp/wp4056407.jpg'
-  },
-  {
-    id: 'mock-2',
-    sportType: 'football',
-    title: 'Man. City - Liverpool',
-    time: '18:30',
-    day: 'Mañana',
-    tournament: 'Premier League',
-    tournamentLogo: 'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
-    channelsList: ['Sky Sports', 'DAZN'],
-    team1: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
-    team2: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg',
-    bgImage: 'https://images.alphacoders.com/100/1008088.jpg'
-  }
-];
+const MOCK_SPORTS_AGENDA = [];
 
 const cleanTitle = (rawTitle) => {
   if (!rawTitle) return '';
@@ -191,15 +164,15 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       try {
         const res = await fetch(`${API_BASE_URL}/api/sports/schedule`);
         const data = await res.json();
-        if (data.success && data.schedule.length > 0) {
-          setLiveSchedule(data.schedule);
+        if (data.success) {
+          setLiveSchedule(data.schedule); // Si está vacío, pondrá [], lo cual es correcto
         } else {
-          setLiveSchedule(MOCK_SPORTS_AGENDA); // Fallback
+          setLiveSchedule([]); 
         }
       } catch (err) {
         console.error("No se pudo conectar al Robot Lector");
         setScheduleError(true);
-        setLiveSchedule(MOCK_SPORTS_AGENDA); // Fallback
+        setLiveSchedule([]); 
       }
     };
     fetchSchedule();
@@ -341,9 +314,11 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     }
   }, [selectedSeriesId]);
 
-  // MOTORES DE MEMORIA (FAVORITOS E HISTORIAL COMPARTIDO)
+  // MOTORES DE MEMORIA (FAVORITOS E HISTORIAL COMPARTIDO/SEPARADO)
   const [favorites, setFavorites] = useState([]); 
-  const [history, setHistory] = useState([]); 
+  const [movieHistory, setMovieHistory] = useState([]); 
+  const [seriesHistory, setSeriesHistory] = useState([]); 
+  const [channelHistory, setChannelHistory] = useState([]);
 
   // PAGO Y LICENCIA PREMIUM
   const [isPremium, setIsPremium] = useState(() => localStorage.getItem('licenseStatus') === 'premium');
@@ -470,14 +445,17 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   };
 
   const handleItemClick = (itemId) => {
-    const newHistory = history.filter(id => id !== itemId);
-    setHistory([itemId, ...newHistory]);
-    
     if (activeBottomNav === 'movies') {
+      const newHistory = movieHistory.filter(id => id !== itemId);
+      setMovieHistory([itemId, ...newHistory]);
       setSelectedMovieId(itemId);
     } else if (activeBottomNav === 'series') {
+      const newHistory = seriesHistory.filter(id => id !== itemId);
+      setSeriesHistory([itemId, ...newHistory]);
       setSelectedSeriesId(itemId);
     } else {
+      const newHistory = channelHistory.filter(id => id !== itemId);
+      setChannelHistory([itemId, ...newHistory]);
       // Live TV u otros: lanzamos directamente el reproductor
       const channelObj = MOCK_CHANNELS.find(c => c.id === itemId);
       if (channelObj) {
@@ -490,7 +468,13 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   const categoriesWithCounts = useMemo(() => {
     return MOCK_CATEGORIES.map(cat => {
       if (cat.id === 'fav') return { ...cat, count: favorites.length };
-      if (cat.id === 'hist') return { ...cat, count: history.length };
+      if (cat.id === 'hist') {
+        let histCount = 0;
+        if (activeBottomNav === 'movies') histCount = movieHistory.length;
+        else if (activeBottomNav === 'series') histCount = seriesHistory.length;
+        else histCount = channelHistory.length;
+        return { ...cat, count: histCount };
+      }
       
       if (cat.id === 'all') {
         const allCount = activeBottomNav === 'movies' ? MOCK_MOVIES.length : activeBottomNav === 'series' ? MOCK_SERIES.length : MOCK_CHANNELS.length;
@@ -508,7 +492,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
       return { ...cat, count: specificCount };
     });
-  }, [MOCK_CATEGORIES, favorites, history, activeBottomNav, MOCK_MOVIES, MOCK_SERIES, MOCK_CHANNELS]);
+  }, [MOCK_CATEGORIES, favorites, movieHistory, seriesHistory, channelHistory, activeBottomNav, MOCK_MOVIES, MOCK_SERIES, MOCK_CHANNELS]);
 
   // RUTINAS DE FILTRADO MEMOIZADAS
   const displayedChannels = useMemo(() => {
@@ -516,7 +500,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     if (activeCategory === 'fav') {
       filtered = MOCK_CHANNELS.filter(c => favorites.includes(c.id));
     } else if (activeCategory === 'hist') {
-      filtered = history.map(id => MOCK_CHANNELS.find(c => c.id === id)).filter(Boolean);
+      filtered = channelHistory.map(id => MOCK_CHANNELS.find(c => c.id === id)).filter(Boolean);
     } else if (activeCategory !== 'all') {
       filtered = MOCK_CHANNELS.filter(c => c.groupId === activeCategory);
     }
@@ -526,14 +510,14 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       filtered = filtered.filter(c => c.name.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  }, [MOCK_CHANNELS, activeCategory, favorites, history, debouncedSearchQuery, visibleItemsCount]);
+  }, [MOCK_CHANNELS, activeCategory, favorites, channelHistory, debouncedSearchQuery, visibleItemsCount]);
 
   const displayedMovies = useMemo(() => {
     let filtered = MOCK_MOVIES;
     if (activeCategory === 'fav') {
       filtered = MOCK_MOVIES.filter(m => favorites.includes(m.id));
     } else if (activeCategory === 'hist') {
-      filtered = history.map(id => MOCK_MOVIES.find(m => m.id === id)).filter(Boolean);
+      filtered = movieHistory.map(id => MOCK_MOVIES.find(m => m.id === id)).filter(Boolean);
     } else if (activeCategory !== 'all') {
       filtered = MOCK_MOVIES.filter(m => m.groupId === activeCategory);
     }
@@ -547,14 +531,14 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       filtered = filtered.filter(m => m.title.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  }, [MOCK_MOVIES, activeCategory, favorites, history, activeGenre, debouncedSearchQuery, visibleItemsCount]);
+  }, [MOCK_MOVIES, activeCategory, favorites, movieHistory, activeGenre, debouncedSearchQuery, visibleItemsCount]);
 
   const displayedSeries = useMemo(() => {
     let filtered = MOCK_SERIES;
     if (activeCategory === 'fav') {
       filtered = MOCK_SERIES.filter(s => favorites.includes(s.id));
     } else if (activeCategory === 'hist') {
-      filtered = history.map(id => MOCK_SERIES.find(s => s.id === id)).filter(Boolean);
+      filtered = seriesHistory.map(id => MOCK_SERIES.find(s => s.id === id)).filter(Boolean);
     } else if (activeCategory !== 'all') {
       filtered = MOCK_SERIES.filter(s => s.groupId === activeCategory);
     }
@@ -568,7 +552,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       filtered = filtered.filter(s => s.title.toLowerCase().includes(q));
     }
     return filtered.slice(0, visibleItemsCount);
-  }, [MOCK_SERIES, activeCategory, favorites, history, activeGenre, debouncedSearchQuery, visibleItemsCount]);
+  }, [MOCK_SERIES, activeCategory, favorites, seriesHistory, activeGenre, debouncedSearchQuery, visibleItemsCount]);
 
   const handleScroll = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;

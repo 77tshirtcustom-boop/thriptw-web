@@ -158,15 +158,31 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
     };
   }, [media]);
 
+  useEffect(() => {
+    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    
+    if (isPlaying && !activeMenu) {
+      controlsTimeoutRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 3500);
+    } else if (!isPlaying) {
+      setShowControls(true);
+    }
+    
+    return () => {
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
+  }, [isPlaying, activeMenu]);
+
   const handleMouseMove = () => {
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     
     // Si algún menú está abierto, no ocultar los controles
-    if (!activeMenu) {
+    if (!activeMenu && isPlaying) {
       controlsTimeoutRef.current = setTimeout(() => {
-        if (isPlaying) setShowControls(false);
-      }, 3000);
+        setShowControls(false);
+      }, 3500);
     }
   };
 

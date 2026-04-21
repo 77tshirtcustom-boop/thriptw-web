@@ -5,7 +5,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import * as cheerio from 'cheerio';
-
+import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -13,28 +13,51 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CODES_FILE = path.join(__dirname, 'codes.json');
-const SPORTS_FILE = path.join(__dirname, 'sports.json');
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://thrlachkar_db_user:7G5K44ssqKTVQc8L@cluster0.msa9buh.mongodb.net/?appName=Cluster0';
 
-const getCodes = () => {
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Conectado a MongoDB Atlas'))
+  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
+
+const codeSchema = new mongoose.Schema({
+  pin: String,
+  status: { type: String, default: 'available' },
+  usedAt: Date,
+  createdAt: { type: Date, default: Date.now }
+});
+const Code = mongoose.model('Code', codeSchema);
+
+const sportSchema = new mongoose.Schema({
+  id: String,
+  sportType: String,
+  title: String,
+  time: String,
+  day: String,
+  tournament: String,
+  tournamentLogo: String,
+  channelsList: [String],
+  team1: String,
+  team2: String,
+  bgImage: String,
+  createdAt: { type: Date, default: Date.now }
+});
+const Sport = mongoose.model('Sport', sportSchema);
+
+const configSchema = new mongoose.Schema({
+  key: { type: String, unique: true },
+  value: String
+});
+const Config = mongoose.model('Config', configSchema);
+
+async function checkAdminPassword(pwd) {
   try {
-    return JSON.parse(fs.readFileSync(CODES_FILE, 'utf8'));
-  } catch (e) { return []; }
-};
-
-const saveCodes = (data) => {
-  fs.writeFileSync(CODES_FILE, JSON.stringify(data, null, 2));
-};
-
-const getSports = () => {
-  try {
-    return JSON.parse(fs.readFileSync(SPORTS_FILE, 'utf8'));
-  } catch (e) { return []; }
-};
-
-const saveSports = (data) => {
-  fs.writeFileSync(SPORTS_FILE, JSON.stringify(data, null, 2));
-};
+    const adminConfig = await Config.findOne({ key: 'admin_password' });
+    const truePassword = adminConfig ? adminConfig.value : (process.env.ADMIN_PASSWORD || 'thrbek+76');
+    return pwd === truePassword;
+  } catch (e) {
+    return pwd === 'thrbek+76';
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -44,18 +67,21 @@ app.use(cors());
 app.use(express.json());
 
 // -------- AGENDA DEPORTIVA MANUAL (CMS) --------
-app.get('/api/sports/schedule', (req, res) => {
-  const sports = getSports();
-  res.json({ success: true, schedule: sports });
+app.get('/api/sports/schedule', async (req, res) => {
+  try {
+    const sports = await Sport.find().sort({ createdAt: 1 });
+    res.json({ success: true, schedule: sports });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Database error' });
+  }
 });
 
-app.post('/api/sports/schedule', (req, res) => {
+app.post('/api/sports/schedule', async (req, res) => {
   const { password, event } = req.body;
   
-  if (password !== 'thrbek+76') return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
+  if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
   
-  const sports = getSports();
-  const newEvent = {
+  const newEvent = new Sport({
     id: `match-live-${Date.now()}`,
     sportType: 'football',
     title: `${event.homeTeam || 'Local'} - ${event.awayTeam || 'Visitante'}`,
@@ -66,24 +92,18 @@ app.post('/api/sports/schedule', (req, res) => {
     channelsList: event.channelsList || [], 
     team1: event.homeLogo || 'https://placehold.co/100x100/101010/FFF.png?text=L',
     team2: event.awayLogo || 'https://placehold.co/100x100/101010/FFF.png?text=V',
-    bgImage: event.bgImage || 'https://i.pinimg.com/1200x/c7/ab/3c/c7ab3c490ec9e59124fb442b58ea0b33.jpg',
-    createdAt: new Date().toISOString()
-  };
+    bgImage: event.bgImage || 'https://i.pinimg.com/1200x/c7/ab/3c/c7ab3c490ec9e59124fb442b58ea0b33.jpg'
+  });
   
-  sports.push(newEvent);
-  saveSports(sports);
+  await newEvent.save();
   res.json({ success: true, event: newEvent });
 });
 
-app.delete('/api/sports/schedule/:id', (req, res) => {
+app.delete('/api/sports/schedule/:id', async (req, res) => {
   const { password } = req.body;
-  if (password !== 'thrbek+76') return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
+  if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
   
-  const eventId = req.params.id;
-  let sports = getSports();
-  sports = sports.filter(s => s.id !== eventId);
-  saveSports(sports);
-  
+  await Sport.deleteOne({ id: req.params.id });
   res.json({ success: true });
 });
 
@@ -210,25 +230,25 @@ app.get('/api/proxy/stream', async (req, res) => {
 });
 
 // -------- SISTEMA DE PINES (TELEGRAM VIP) --------
-app.post('/api/payments/verify', (req, res) => {
+app.post('/api/payments/verify', async (req, res) => {
   const { pinCode } = req.body;
 
   if (pinCode && typeof pinCode === 'string') {
     const cleanedCode = pinCode.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     
     if (cleanedCode.length === 12) {
-      const codes = getCodes();
-      const codeIndex = codes.findIndex(c => c.pin === cleanedCode);
+      const codeRecord = await Code.findOne({ pin: cleanedCode });
 
-      if (codeIndex !== -1) {
-        if (codes[codeIndex].status === 'used') {
+      if (codeRecord) {
+        if (codeRecord.status === 'used') {
           return res.status(400).json({ success: false, message: 'Este Pin ya ha sido utilizado.' });
         }
 
         // Quemar el pin en base de datos
-        codes[codeIndex].status = 'used';
-        codes[codeIndex].usedAt = new Date().toISOString();
-        saveCodes(codes);
+        codeRecord.status = 'used';
+        codeRecord.usedAt = new Date();
+        await codeRecord.save();
+        
         console.log(`[PIN VERIFIED] Código de Activación Quemado: ${cleanedCode}`);
         
         const issueDate = new Date();
@@ -253,10 +273,10 @@ app.post('/api/payments/verify', (req, res) => {
 });
 
 // -------- PANEL ADMIN (NUEVAS RUTAS) --------
-app.post('/api/admin/generate-code', (req, res) => {
+app.post('/api/admin/generate-code', async (req, res) => {
   const { password } = req.body;
   
-  if (password !== 'thrbek+76') return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
+  if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Contraseña de administrador incorrecta' });
 
   // Excluimos I, O, 0, 1 para evitar confusión en códigos de canjeo
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -265,21 +285,21 @@ app.post('/api/admin/generate-code', (req, res) => {
     rawPin += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  const codes = getCodes();
-  codes.push({
+  const newCode = new Code({
     pin: rawPin,
-    status: 'available',
-    createdAt: new Date().toISOString()
+    status: 'available'
   });
-  saveCodes(codes);
+  await newCode.save();
 
   res.json({ success: true, pin: rawPin });
 });
 
-app.post('/api/admin/codes', (req, res) => {
+app.post('/api/admin/codes', async (req, res) => {
   const { password } = req.body;
-  if (password !== 'thrbek+76') return res.status(403).json({ error: 'Acceso Denegado' });
-  res.json(getCodes());
+  if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
+  
+  const codes = await Code.find().sort({ createdAt: -1 });
+  res.json(codes);
 });
 
 // -------- SERVIR EL FRONTEND (REACT / VITE) --------
