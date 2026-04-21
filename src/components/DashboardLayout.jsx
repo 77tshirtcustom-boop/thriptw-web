@@ -872,7 +872,11 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                         key={`${movie.id}-${idx}`} 
                         className="movie-poster-card focusable" 
                         style={{ flexShrink: 0, width: '220px', height: '330px' }}
-                        onClick={() => setSelectedMovieId(movie.id)}
+                        onClick={() => {
+                          const newHistory = movieHistory.filter(id => id !== movie.id);
+                          setMovieHistory([movie.id, ...newHistory]);
+                          setSelectedMovieId(movie.id);
+                        }}
                       >
                         <div className="movie-poster-wrapper" style={{ position: 'relative' }}>
                           <button 
@@ -966,7 +970,11 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                         key={`${series.id}-${idx}`} 
                         className="movie-poster-card focusable" 
                         style={{ flexShrink: 0, width: '220px', height: '330px' }}
-                        onClick={() => setSelectedSeriesId(series.id)}
+                        onClick={() => {
+                          const newHistory = seriesHistory.filter(id => id !== series.id);
+                          setSeriesHistory([series.id, ...newHistory]);
+                          setSelectedSeriesId(series.id);
+                        }}
                       >
                         <div className="movie-poster-wrapper" style={{ position: 'relative' }}>
                           <button 
@@ -1239,7 +1247,12 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '20px', fontWeight: 'bold' }}>Películas parecidas:</h3>
                       <div className="similar-movies-row scroll-area-x" style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '20px' }}>
                         {MOCK_MOVIES.filter(m => m.groupId === movie.groupId && m.id !== movie.id).slice(0, 20).map(similar => (
-                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { e.stopPropagation(); setSelectedMovieId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
+                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { 
+                            e.stopPropagation(); 
+                            const newHistory = movieHistory.filter(id => id !== similar.id);
+                            setMovieHistory([similar.id, ...newHistory]);
+                            setSelectedMovieId(similar.id); 
+                          }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
                             <img loading="lazy" decoding="async" src={fixedPosters[similar.id] || similar.poster} alt={similar.title} style={{ width: '100%', height: '210px', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }} onError={(e) => { e.target.src = 'https://placehold.co/300x450/101010/FFF.png?text=Sin+Portada'; }} />
                             <p style={{ color: '#fff', fontSize: '13px', marginTop: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '600', textAlign: 'center', margin: 0 }}>
                               {cleanTitle(similar.title)}
@@ -1481,7 +1494,12 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '20px', fontWeight: 'bold' }}>Series parecidas:</h3>
                       <div className="similar-movies-row scroll-area-x" style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '20px' }}>
                         {MOCK_SERIES.filter(s => s.groupId === series.groupId && s.id !== series.id).slice(0, 20).map(similar => (
-                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { e.stopPropagation(); setSelectedSeriesId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
+                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { 
+                            e.stopPropagation(); 
+                            const newHistory = seriesHistory.filter(id => id !== similar.id);
+                            setSeriesHistory([similar.id, ...newHistory]);
+                            setSelectedSeriesId(similar.id); 
+                          }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
                             <img loading="lazy" decoding="async" src={fixedPosters[similar.id] || similar.poster} alt={similar.title} style={{ width: '100%', height: '210px', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }} onError={(e) => { e.target.src = 'https://placehold.co/300x450/101010/FFF.png?text=Sin+Portada'; }} />
                             <p style={{ color: '#fff', fontSize: '13px', marginTop: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '600', textAlign: 'center', margin: 0 }}>
                               {cleanTitle(similar.title)}
@@ -1519,7 +1537,12 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                {displayedSeries.filter(Boolean).map(series => {
                 const isFav = favorites.includes(series.id);
                 return (
-                  <div key={series.id} className="movie-poster-card" onClick={() => { setSelectedSeriesId(series.id); setActiveSeason(1); }}>
+                 <div key={series.id} className="movie-poster-card focusable" onClick={() => { 
+                   const newHistory = seriesHistory.filter(id => id !== series.id);
+                   setSeriesHistory([series.id, ...newHistory]);
+                   setSelectedSeriesId(series.id); 
+                   setActiveSeason(1); 
+                 }}>
                     <div className="movie-poster-wrapper" style={{ position: 'relative' }}>
 
                       
