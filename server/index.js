@@ -117,8 +117,13 @@ app.post('/api/proxy/xtream', async (req, res) => {
   const { url, username, password, action } = req.body;
   try {
     const targetUrl = `${url}/player_api.php?username=${username}&password=${password}&action=${action}`;
-    const response = await axios.get(targetUrl);
-    res.json(response.data);
+    const response = await axios({
+      method: 'get',
+      url: targetUrl,
+      responseType: 'stream'
+    });
+    if (response.headers['content-type']) res.setHeader('Content-Type', response.headers['content-type']);
+    response.data.pipe(res);
   } catch (error) {
     res.status(500).json({ error: 'Proxy Request Failed', details: error.message });
   }
@@ -128,8 +133,13 @@ app.post('/api/proxy/xtream', async (req, res) => {
 app.post('/api/proxy/m3u', async (req, res) => {
   const { url } = req.body;
   try {
-    const response = await axios.get(url);
-    res.send(response.data);
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream'
+    });
+    if (response.headers['content-type']) res.setHeader('Content-Type', response.headers['content-type']);
+    response.data.pipe(res);
   } catch (error) {
     res.status(500).json({ error: 'Proxy Request Failed', details: error.message });
   }
