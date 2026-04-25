@@ -8,16 +8,20 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
   
   const proxyFetch = async (action) => {
     const actionParam = action ? `&action=${action}` : '';
-    const directUrl = `${baseUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}${actionParam}`;
+    // Añadimos &t= para romper el caché del servidor y del navegador
+    const directUrl = `${baseUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}${actionParam}&t=${Date.now()}`;
     
-    // 1. Intento Directo (Funciona nativamente en Electron y Capacitor/Android gracias al bypass de CORS)
-    try {
-      const resp = await fetch(directUrl);
-      if (resp.ok) {
-        return await resp.json();
+    // 1. Intento Directo (Solo si no estamos en el EXE y queremos velocidad)
+    const isEXE = window.location.protocol === 'file:';
+    if (!isEXE) {
+      try {
+        const resp = await fetch(directUrl);
+        if (resp.ok) {
+          return await resp.json();
+        }
+      } catch (e) {
+        console.log('Falló el fetch directo, intentando proxy...', e);
       }
-    } catch (e) {
-      console.log('Falló el fetch directo (posible CORS en navegador web), intentando proxy...', e);
     }
 
     // 2. Fallback Proxy (Útil solo para PWA / Navegadores donde existe Node backend activo)

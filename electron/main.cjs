@@ -40,6 +40,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  const { session } = require('electron');
+  // Configurar DNS sobre HTTPS (Cloudflare) para máxima privacidad
+  // Esto oculta qué dominios consulta la app, incluso si no pasan por el proxy.
+  session.defaultSession.setDNSOverHTTPS('https://cloudflare-dns.com/dns-query');
+  console.log('DNS over HTTPS (Cloudflare) activado.');
+  
   createWindow();
 });
 

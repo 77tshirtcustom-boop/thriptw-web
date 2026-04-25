@@ -138,17 +138,26 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
       setIsLoading(true);
       setErrorMsg('');
       try {
-        // Intento directo
+        const isEXE = window.location.protocol === 'file:';
         let response;
-        try {
-          response = await fetch(m3uUrl);
-        } catch (e) {
-          // Intento vía proxy
+        
+        if (isEXE) {
+          // En el EXE forzamos el proxy para saltar el bloqueo del ISP
           response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: m3uUrl })
           });
+        } else {
+          try {
+            response = await fetch(m3uUrl);
+          } catch (e) {
+            response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: m3uUrl })
+            });
+          }
         }
         
         if (!response.ok) throw new Error('No se pudo descargar la lista M3U');
@@ -159,6 +168,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
           throw new Error('La lista M3U está vacía o tiene un formato no válido.');
         }
 
+        localStorage.setItem('thriptw_m3uUrl', m3uUrl);
         onLogin({ type: 'm3u', data: parsedData });
       } catch (err) {
         setErrorMsg('Error al cargar la lista M3U: ' + err.message);
@@ -248,15 +258,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
           {isLoading ? t.btnDecoding : t.btnConnect}
         </button>
 
-        <button 
-          className="submit-btn focusable" 
-          type="button" 
-          onClick={() => onLogin({ type: 'guest', data: { channels: [], movies: [], series: [], categories: [] } })} 
-          style={{ marginTop: '15px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#aaa' }}
-        >
-          <Tv className="submit-icon" size={20} />
-          Entrar sin lista
-        </button>
+
 
         {/* Espaciador inferior */}
         <div style={{ marginTop: '20px' }}></div>

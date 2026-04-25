@@ -34,6 +34,7 @@ import {
 import './DashboardLayout.css';
 import VideoPlayer from './VideoPlayer';
 import { translations } from '../i18n/translations';
+import { fetchXtreamData } from '../services/xtreamService';
 // -- CONFIGURACIÓN DE PRODUCCIÓN INTELIGENTE --
 const isWeb = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
 const API_BASE_URL = isWeb ? window.location.origin : 'https://thriptw-web.onrender.com';
@@ -86,8 +87,60 @@ const translateToSpanish = async (text) => {
   }
 };
 
-const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }) => {
+const DashboardLayout = ({ onLogout, playlistData, setPlaylistData, appLanguage, setAppLanguage }) => {
   const tr = translations[appLanguage] || translations.es;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    const xtUrl = localStorage.getItem('thriptw_xtUrl');
+    const xtUser = localStorage.getItem('thriptw_xtUser');
+    const xtPass = localStorage.getItem('thriptw_xtPass');
+    const m3uUrl = localStorage.getItem('thriptw_m3uUrl');
+
+    if (!xtUrl && !m3uUrl) {
+      alert("No hay credenciales guardadas para actualizar. Por favor, vuelve a iniciar sesión.");
+      return;
+    }
+
+    setIsRefreshing(true);
+    try {
+      let freshData = null;
+      
+      if (xtUrl && xtUser && xtPass) {
+        console.log("Intentando refrescar Xtream...");
+        freshData = await fetchXtreamData(xtUrl, xtUser, xtPass);
+      } else if (m3uUrl) {
+        console.log("Intentando refrescar M3U...");
+        let response;
+        try {
+          response = await fetch(m3uUrl);
+        } catch (e) {
+          response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: m3uUrl })
+          });
+        }
+        if (!response.ok) throw new Error('Error al descargar la lista remota');
+        const text = await response.text();
+        const { parseM3UString } = await import('../services/iptwParser');
+        freshData = parseM3UString(text);
+      }
+
+      if (freshData && (freshData.channels.length > 0 || freshData.movies.length > 0 || freshData.series.length > 0)) {
+        console.log("Datos frescos recibidos:", freshData);
+        setPlaylistData({...freshData});
+        alert("¡Lista sincronizada con el servidor correctamente!");
+      } else {
+        alert("El servidor respondió pero la lista está vacía.");
+      }
+    } catch (err) {
+      console.error("Error refreshing list:", err);
+      alert("Fallo al actualizar: " + err.message);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const isListLoaded = playlistData && (
     (playlistData.channels && playlistData.channels.length > 0) || 
@@ -315,10 +368,17 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   }, [selectedSeriesId]);
 
   // MOTORES DE MEMORIA (FAVORITOS E HISTORIAL COMPARTIDO/SEPARADO)
-  const [favorites, setFavorites] = useState([]); 
-  const [movieHistory, setMovieHistory] = useState([]); 
-  const [seriesHistory, setSeriesHistory] = useState([]); 
-  const [channelHistory, setChannelHistory] = useState([]);
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('thriptw_favorites') || '[]')); 
+  const [movieHistory, setMovieHistory] = useState(() => JSON.parse(localStorage.getItem('thriptw_movieHistory') || '[]')); 
+  const [seriesHistory, setSeriesHistory] = useState(() => JSON.parse(localStorage.getItem('thriptw_seriesHistory') || '[]')); 
+  const [channelHistory, setChannelHistory] = useState(() => JSON.parse(localStorage.getItem('thriptw_channelHistory') || '[]'));
+
+  useEffect(() => {
+    localStorage.setItem('thriptw_favorites', JSON.stringify(favorites));
+    localStorage.setItem('thriptw_movieHistory', JSON.stringify(movieHistory));
+    localStorage.setItem('thriptw_seriesHistory', JSON.stringify(seriesHistory));
+    localStorage.setItem('thriptw_channelHistory', JSON.stringify(channelHistory));
+  }, [favorites, movieHistory, seriesHistory, channelHistory]);
 
   // PAGO Y LICENCIA PREMIUM
   const [isPremium, setIsPremium] = useState(() => localStorage.getItem('licenseStatus') === 'premium');
@@ -653,6 +713,15 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
           {activeBottomNav === 'settings' && <><Settings className="icon-live" size={24} /> {tr.nav.settings}</>}
         </div>
         <div className="top-bar-actions desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <button 
+            className={`focusable ${isRefreshing ? 'rotating' : ''}`}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            title="Actualizar lista"
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '8px' }}
+          >
+            <RefreshCcw size={22} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
+          </button>
           <button 
             className="focusable" 
             onClick={toggleFullScreen} 

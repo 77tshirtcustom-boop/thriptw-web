@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron": "electron .",
-    "build:win": "vite build && npx electron-packager . THRIPTW --platform=win32 --arch=x64 --out=release --icon=public/Logo.ico --overwrite --ignore=\"(release|src|android|ios|jdk17|jdk21|release-new|.git|Marca_dump.html)\""
+    "build:win": "vite build && npx electron-packager . THRIPTW --platform=win32 --arch=x64 --out=release --icon=public/Logo.ico --overwrite --ignore=\"(release|src|android|ios|jdk17|jdk21|release-new|.git|Marca_dump.html)\"",
+    "build:tizen": "vite build && powershell -Command \"if (-not (Test-Path release)) { New-Item -ItemType Directory -Force -Path release }; Copy-Item tizen-config.xml dist\\config.xml; if (Test-Path release\\ThripTW-Tizen.wgt) { Remove-Item release\\ThripTW-Tizen.wgt -Force }; Compress-Archive -Path dist\\* -DestinationPath release\\ThripTW-Tizen.zip -Force; Rename-Item -Path release\\ThripTW-Tizen.zip -NewName ThripTW-Tizen.wgt\"",
+    "build:webos": "vite build && powershell -Command \"if (-not (Test-Path release\\webos_ready)) { New-Item -ItemType Directory -Force -Path release\\webos_ready }; Copy-Item dist\\* release\\webos_ready -Recurse -Force; Copy-Item appinfo.json release\\webos_ready\\appinfo.json -Force; Copy-Item public\\Logo.png release\\webos_ready\\icon.png -Force\""
   },
   "build": {
     "appId": "com.thriptw.desktop",

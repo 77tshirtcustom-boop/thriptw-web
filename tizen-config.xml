@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://thriptw.com/tv" version="1.0.0" viewmodes="fullscreen">
+    <tizen:application id="com.thriptw.tv" package="com.thriptw.tv" required_version="3.0"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <feature name="http://tizen.org/feature/network.internet"/>
+    <icon src="Logo.png"/>
+    <name>THRIPTW</name>
+    <tizen:profile name="tv"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    
+    <!-- MAGIA: Bypass de CORS para Tizen (Acceso a cualquier servidor sin límites) -->
+    <access origin="*" subdomains="true"/>
+    
+    <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

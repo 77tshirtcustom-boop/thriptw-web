@@ -1,0 +1,15 @@
+{
+  "id": "com.thriptw.app",
+  "version": "1.0.0",
+  "vendor": "Tahir",
+  "type": "web",
+  "main": "index.html",
+  "title": "THRIPTW",
+  "icon": "icon.png",
+  "largeIcon": "icon.png",
+  "appDescription": "ThripTW IPTV App",
+  "bgColor": "#0A0A0A",
+  "iconColor": "#D91E18",
+  "resolution": "1920x1080",
+  "transparent": false
+}

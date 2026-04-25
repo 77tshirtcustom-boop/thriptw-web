@@ -53,13 +53,14 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
     
     let hls;
     let streamUrl = media.url;
+    // -- ACTIVACIÓN DEL MODO CAMUFLAJE (Proxy para ocultar URL al ISP) --
+    const isEXE = window.location.protocol === 'file:';
     const isHTTPS = window.location.protocol === 'https:';
     const isWeb = window.location.protocol !== 'file:';
 
-    // -- ACTIVACIÓN DEL PUENTE DE VÍDEO (Modo Automático) --
-    if (isWeb && isHTTPS && streamUrl.startsWith('http:')) {
-      console.log("Activando Puente de Vídeo para saltar Mixed Content...");
-      // Usamos el proxy de nuestro servidor para convertir el stream en HTTPS "falso"
+    if (isEXE || (isWeb && isHTTPS && streamUrl.startsWith('http:'))) {
+      console.log("Activando Modo Camuflaje (Proxy remoto) para ocultar actividad al ISP...");
+      // Usamos el proxy de nuestro servidor remoto para que el ISP solo vea tráfico hacia Render
       streamUrl = `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(streamUrl)}`;
     }
 
@@ -347,7 +348,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev }) => {
         </div>
 
         {/* CUBIERTA CENTRAL DE PLAY/PAUSE AL HACER CLIC */}
-        <div className="center-play-pause fade-element focusable" onClick={togglePlay}>
+        <div className="center-play-pause fade-element" onClick={togglePlay}>
            {!isPlaying && (
              <div className="big-play-btn">
                <Play size={48} fill="currentColor" />

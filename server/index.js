@@ -136,7 +136,12 @@ app.post('/api/proxy/m3u', async (req, res) => {
     const response = await axios({
       method: 'get',
       url: url,
-      responseType: 'stream'
+      responseType: 'stream',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Language': 'es-ES,es;q=0.9'
+      }
     });
     if (response.headers['content-type']) res.setHeader('Content-Type', response.headers['content-type']);
     response.data.pipe(res);
@@ -168,7 +173,7 @@ app.get('/api/proxy/stream', async (req, res) => {
       });
       let content = response.data;
       
-      const protocol = 'https'; 
+      const protocol = req.protocol === 'https' ? 'https' : 'http'; 
       const host = req.get('host');
       const proxyBase = `${protocol}://${host}/api/proxy/stream?url=`;
 

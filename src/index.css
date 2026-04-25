@@ -33,7 +33,22 @@ body {
   overflow-x: hidden; /* Avoid Windows 100vw bug */
 }
 
+/* 📺 TV SAFE AREA (OVERSCAN) ADJUSTMENT */
+body.tv-navigation-active {
+  padding: 3.5% 5% !important; /* Margen de seguridad para que no se corte en los bordes de la TV */
+  box-sizing: border-box;
+  overflow: hidden; /* No scroll en el body principal en TVs */
+  height: 100vh;
+  width: 100vw;
+}
 
+body.tv-navigation-active #root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 button {
   cursor: pointer;
@@ -67,9 +82,11 @@ input:focus {
 
 body.tv-navigation-active .focusable:focus, 
 body.tv-navigation-active .focusable:focus-visible {
-  outline: 2px solid #f1c40f !important;
-  outline-offset: 2px !important;
-  background-color: rgba(241, 196, 15, 0.15) !important;
+  outline: 2px solid #F1C40F !important; /* Borde más fino y elegante */
+  outline-offset: 3px !important;
+  box-shadow: 0 0 12px rgba(241, 196, 15, 0.4) !important;
+  transform: scale(1.03); /* Resalte más sutil */
+  z-index: 100;
 }
 
 /* En modo PC/Escritorio, el foco es normal y discreto */
@@ -80,8 +97,8 @@ body.tv-navigation-active .focusable:focus-visible {
 /* Cambiar stroke/color a amarillo en iconos (como Lucide-react) al tener foco */
 body.tv-navigation-active .focusable:focus svg, 
 body.tv-navigation-active .focusable:focus-visible svg {
-  color: #f1c40f !important;
-  stroke: #f1c40f !important;
+  color: #F1C40F !important;
+  stroke: #F1C40F !important;
 }
 
 /* Excepción: En la barra de navegación inferior, solo cambia el color, sin cuadro */
@@ -89,5 +106,13 @@ body.tv-navigation-active .bottom-nav .nav-item.focusable:focus,
 body.tv-navigation-active .bottom-nav .nav-item.focusable:focus-visible {
   outline: none !important;
   background-color: transparent !important;
-  transform: scale(1.2) !important;
+  box-shadow: none !important; 
+  text-shadow: none !important;
+  transform: scale(1.1) !important;
+}
+
+/* Color de selección de texto */
+::selection {
+  background-color: var(--primary-red);
+  color: #000;
 }

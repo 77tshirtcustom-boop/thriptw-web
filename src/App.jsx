@@ -41,19 +41,36 @@ function App() {
   }
 
   useEffect(() => {
-    // Detectar si estamos en un PC de escritorio (Chrome, Edge, Electron, Mac, Windows)
+    // Detectar dispositivo y capacidades táctiles
     const isTV = /Tizen|Web0S|WebOS|SMART-TV|SmartTV/i.test(navigator.userAgent);
     const isAndroid = /android/i.test(navigator.userAgent.toLowerCase());
     const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
     
-    // Si no es ni TV, ni Android, ni iOS, asumimos que es un PC (Escritorio / Electron)
     // Si es Windows o Mac, es definitivamente un PC
     const isWindows = /windows/i.test(navigator.userAgent.toLowerCase());
     const isMac = /mac/i.test(navigator.userAgent.toLowerCase());
+    
+    // Comprobar si tiene pantalla táctil (los TV Box devuelven 0, los móviles > 0)
+    const hasTouch = (navigator.maxTouchPoints || 0) > 0 || (navigator.msMaxTouchPoints || 0) > 0;
     const isDesktopPC = isWindows || isMac || (!isTV && !isAndroid && !isIOS);
+    
+    // Es un Android TV si es Android y NO tiene pantalla táctil
+    const isAndroidTV = isAndroid && !hasTouch;
 
-    // Habilitar navegación espacial (Smart TV / Remoto) para todos los usuarios web
-    document.body.classList.add('tv-navigation-active');
+    // Habilitar navegación espacial (Smart TV / Remoto) solo para TVs o Android TV (o PC sin táctil para tests)
+    if (isTV || isAndroidTV || (!hasTouch && isDesktopPC)) {
+      document.body.classList.add('tv-navigation-active');
+      
+      // FORZAR ESCALADO CORRECTO PARA TV:
+      // Muchos TV Box o Smart TVs mienten sobre su resolución y hacen un zoom gigante.
+      // Forzamos el viewport a 1920px para que encaje como un escritorio a 1080p.
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport && (isTV || isAndroidTV)) {
+        viewport.setAttribute('content', 'width=1920, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no');
+      }
+    } else {
+      document.body.classList.remove('tv-navigation-active');
+    }
     SpatialNavigation.init();
     SpatialNavigation.add({
       selector: '.focusable'
@@ -128,6 +145,7 @@ function App() {
           <DashboardLayout 
             onLogout={handleLogout} 
             playlistData={playlistData} 
+            setPlaylistData={setPlaylistData}
             appLanguage={appLanguage} 
             setAppLanguage={setAppLanguage} 
           />
