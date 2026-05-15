@@ -2089,21 +2089,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
             }}>
               <span style={{ fontSize: '16px', color: 'white', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MAC:</span>
               <span style={{ fontSize: '20px', color: '#f1c40f', fontWeight: '900', fontFamily: 'monospace', letterSpacing: '1px' }}>
-                {(() => {
-                  let id = localStorage.getItem('thriptw_device_id');
-                  if (id && id.includes(';')) {
-                    id = id.replace(/;/g, ':');
-                    localStorage.setItem('thriptw_device_id', id);
-                  }
-                  const isMacFormat = /^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/i.test(id);
-
-                  if (!id || !isMacFormat) {
-                    const hex = '0123456789ABCDEF';
-                    id = Array.from({length: 6}, () => hex[Math.floor(Math.random()*16)] + hex[Math.floor(Math.random()*16)]).join(':');
-                    localStorage.setItem('thriptw_device_id', id);
-                  }
-                  return id;
-                })()}
+                {localStorage.getItem('thriptw_device_id') || '00:00:00:00:00:00'}
               </span>
             </div>
             

@@ -319,10 +319,7 @@ const ActivationFlow = ({ tr, isBlocking, onClose, activationCode, setActivation
         }}>
           <span style={{ fontSize: '18px', color: 'white', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MAC:</span>
           <span style={{ fontSize: '22px', color: '#f1c40f', fontWeight: '900', fontFamily: 'monospace', letterSpacing: '2px' }}>
-            {(() => {
-              let id = localStorage.getItem('thriptw_device_id') || '00:00:00:00:00:00';
-              return id.toUpperCase();
-            })()}
+            {localStorage.getItem('thriptw_device_id') || '00:00:00:00:00:00'}
           </span>
         </div>
 
