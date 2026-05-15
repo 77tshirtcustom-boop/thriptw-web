@@ -484,7 +484,7 @@ app.post('/api/admin/stats', async (req, res) => {
 
     res.json({
       devices: { 
-        total: totalDevices + bonusSold, 
+        total: bonusSold, 
         trial: trialDevices, 
         active: activeDevices, 
         blocked: blockedDevices 
@@ -492,7 +492,7 @@ app.post('/api/admin/stats', async (req, res) => {
       codes: { 
         total: totalCodes, 
         available: availableCodes, 
-        used: usedCodes + bonusClients 
+        used: bonusClients 
       }
     });
   } catch (e) {

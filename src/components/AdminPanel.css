@@ -319,22 +319,57 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 12px 25px;
+  padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid var(--admin-border);
 }
-.admin-table th:nth-child(3),
-.admin-table td:nth-child(3) {
-  padding-left: 60px;
-}
 
 .admin-table td {
-  padding: 2px 25px;
+  padding: 6px 15px;
   border-bottom: 1px solid rgba(255,255,255,0.02);
   font-size: 14px;
   color: #ddd;
   vertical-align: middle;
 }
+
+/* Specific for devices table to give space to Client and PIN */
+.devices-table th:nth-child(1), 
+.devices-table td:nth-child(1) { 
+  width: 22%; 
+  min-width: 170px;
+  font-size: 15px;
+} /* CLIENTE */
+
+.devices-table th:nth-child(2), 
+.devices-table td:nth-child(2) { 
+  width: 18%; 
+  min-width: 150px;
+  font-size: 15px;
+} /* PIN */
+
+.devices-table th:nth-child(3), 
+.devices-table td:nth-child(3) { 
+  width: 15%; 
+} /* MAC */
+
+.devices-table th:nth-child(4), 
+.devices-table td:nth-child(4) { 
+  width: 10%; 
+  text-align: center;
+} /* ESTADO */
+
+.devices-table th:nth-child(5), 
+.devices-table td:nth-child(5) { 
+  width: 15%; 
+} /* EXPIRA */
+
+.devices-table th:nth-child(6), 
+.devices-table td:nth-child(6) { 
+  width: 20%; 
+  min-width: 165px;
+  padding-left: 8px;
+  padding-right: 8px;
+} /* ACCIONES */
 
 .pin-cell {
   font-family: 'JetBrains Mono', monospace;
@@ -352,10 +387,16 @@
   text-transform: uppercase;
 }
 
-.status-tag.available, .status-tag.trial, .status-tag.active {
+.status-tag.available, .status-tag.active {
   background: rgba(46, 204, 113, 0.1);
   color: #2ecc71;
   border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.status-tag.trial {
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.2);
 }
 
 .status-tag.used, .status-tag.blocked {

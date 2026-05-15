@@ -378,7 +378,7 @@ const AdminPanel = () => {
             </div>
 
             <div className="admin-table-wrapper">
-              <table className="admin-table">
+              <table className="admin-table devices-table">
                 <thead>
                   <tr>
                     <th>CLIENTE</th>
@@ -396,14 +396,14 @@ const AdminPanel = () => {
                       <td style={{ color: '#f1c40f', fontWeight: 'bold' }}>{d.activatedByPin || '---'}</td>
                       <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{d.deviceId}</td>
                       <td>
-                        <span className={`status-tag ${d.status || ''}`}>
+                        <span className={`status-tag ${(d.status || 'trial').toLowerCase()}`}>
                           {(d.status || 'TRIAL').toUpperCase()}
                         </span>
                       </td>
                       <td>{d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : 'N/A'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          {d.status !== 'active' && (
+                          {(d.status || 'trial').toLowerCase() !== 'active' && (
                             <button 
                               className="btn-icon-action" 
                               title="Activar" 
