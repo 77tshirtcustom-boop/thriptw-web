@@ -18,6 +18,26 @@ import {
 } from 'lucide-react';
 import './AdminPanel.css';
 
+const getTimeRemaining = (expiresAt) => {
+  if (!expiresAt) return 'N/A';
+  const now = new Date();
+  const end = new Date(expiresAt);
+  const diff = end - now;
+
+  if (diff <= 0) return 'EXPIRADO';
+
+  const totalHours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  } else {
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    return `${totalHours}h ${minutes}m`;
+  }
+};
+
 const AdminPanel = () => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -401,20 +421,32 @@ const AdminPanel = () => {
                           {(d.status || 'TRIAL').toUpperCase()}
                         </span>
                       </td>
-                      <td style={{ fontSize: '13px', color: '#fff', fontWeight: '500' }}>{d.createdAt ? new Date(d.createdAt).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '---'}</td>
-                      <td style={{ fontWeight: 'bold', color: d.status === 'active' ? '#2ecc71' : '#fff' }}>{d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : 'N/A'}</td>
+                      <td style={{ fontSize: '13px', color: '#fff', fontWeight: '500' }}>
+                        {d.createdAt ? new Date(d.createdAt).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '---'}
+                      </td>
+                      <td 
+                        style={{ 
+                          fontWeight: 'bold', 
+                          color: d.status === 'active' ? '#2ecc71' : '#fff',
+                          fontSize: '13px'
+                        }}
+                        title={d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : ''}
+                      >
+                        {d.expiresAt ? getTimeRemaining(d.expiresAt) : 'N/A'}
+                      </td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          {(d.status || 'trial').toLowerCase() !== 'active' && (
-                            <button 
-                              className="btn-icon-action" 
-                              title="Activar" 
-                              onClick={() => handleUpdateDeviceStatus(d.deviceId, 'active')}
-                              style={{ color: '#2ecc71' }}
-                            >
-                              <CheckCircle size={16} />
-                            </button>
-                          )}
+                          <button 
+                            className="btn-icon-action" 
+                            title={d.status === 'active' ? "Desactivar" : "Activar"} 
+                            onClick={() => handleUpdateDeviceStatus(d.deviceId, d.status === 'active' ? 'trial' : 'active')}
+                            style={{ 
+                              color: d.status === 'active' ? '#3498db' : '#2ecc71',
+                              opacity: d.status === 'active' ? 0.7 : 1
+                            }}
+                          >
+                            <CheckCircle size={16} />
+                          </button>
                           
                           <button 
                             className="btn-icon-action" 

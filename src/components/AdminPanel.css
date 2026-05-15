@@ -319,13 +319,13 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 12px 15px;
+  padding: 12px 10px; /* Reducido de 15px */
   text-align: left;
   border-bottom: 1px solid var(--admin-border);
 }
 
 .admin-table td {
-  padding: 6px 15px;
+  padding: 6px 10px; /* Reducido de 15px */
   border-bottom: 1px solid rgba(255,255,255,0.02);
   font-size: 14px;
   color: #ddd;
@@ -335,47 +335,48 @@
 /* Specific for devices table to give space to Client and PIN */
 .devices-table th:nth-child(1), 
 .devices-table td:nth-child(1) { 
-  width: 18%; 
+  width: 25%; 
   min-width: 140px;
-  font-size: 14px;
+  font-size: 13px;
 } /* CLIENTE */
 
 .devices-table th:nth-child(2), 
 .devices-table td:nth-child(2) { 
-  width: 14%; 
+  width: 18%; 
   min-width: 130px;
-  font-size: 14px;
+  font-size: 13px;
 } /* PIN */
 
 .devices-table th:nth-child(3), 
 .devices-table td:nth-child(3) { 
-  width: 12%; 
-  font-size: 15px;
+  width: 11%; 
+  font-size: 13px;
 } /* MAC */
 
 .devices-table th:nth-child(4), 
 .devices-table td:nth-child(4) { 
-  width: 9%; 
+  width: 8%; 
   text-align: center;
 } /* ESTADO */
 
 .devices-table th:nth-child(5), 
 .devices-table td:nth-child(5) { 
-  width: 17%; 
-} /* INSTALADO EL */
+  width: 16%; 
+  white-space: nowrap;
+} /* INSTALADO */
 
 .devices-table th:nth-child(6), 
 .devices-table td:nth-child(6) { 
-  width: 12%; 
-  font-size: 15px;
+  width: 10%; 
+  font-size: 13px;
 } /* EXPIRA */
 
 .devices-table th:nth-child(7), 
 .devices-table td:nth-child(7) { 
-  width: 18%; 
+  width: 14%; 
   min-width: 150px;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
 } /* ACCIONES */
 
 .pin-cell {

@@ -414,14 +414,12 @@ app.post('/api/admin/devices/update-status', async (req, res) => {
         }
       }
       
-      // Si se envía una fecha específica, la usamos
-      if (expiresAt) {
-        device.expiresAt = new Date(expiresAt);
-      } else if (device.status === 'active' && (!device.expiresAt || device.expiresAt < new Date())) {
-        // Lógica por defecto de +1 año si no hay fecha manual y se activa
+      // Lógica de activación: 1 año desde HOY
+      if (status === 'active' || (activatedByPin && activatedByPin.length >= 12)) {
         const expires = new Date();
         expires.setFullYear(expires.getFullYear() + 1);
         device.expiresAt = expires;
+        device.status = 'active';
       }
       
       await device.save();
