@@ -377,6 +377,7 @@ const AdminPanel = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th>PIN</th>
                     <th>MAC</th>
                     <th>ESTADO</th>
                     <th>EXPIRA EN</th>
@@ -387,6 +388,7 @@ const AdminPanel = () => {
                 <tbody>
                   {devices.map((d, idx) => (
                     <tr key={idx}>
+                      <td style={{ color: '#f1c40f', fontWeight: 'bold' }}>{d.activatedByPin || '---'}</td>
                       <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{d.deviceId}</td>
                       <td>
                         <span className={`status-tag ${d.status}`}>

@@ -1,6 +1,6 @@
 {
-  "appId": "com.thriptv.mobile",
-  "appName": "THRIPTV",
+  "appId": "com.thriptw.mobile",
+  "appName": "THRIPTW",
   "webDir": "dist",
   "plugins": {
     "CapacitorHttp": {

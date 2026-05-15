@@ -52,6 +52,7 @@ const Config = mongoose.model('Config', configSchema);
 const deviceSchema = new mongoose.Schema({
   deviceId: { type: String, unique: true },
   status: { type: String, default: 'trial' }, // 'trial', 'active', 'blocked'
+  activatedByPin: String, // NUEVO: Para saber qué PIN usó
   expiresAt: Date,
   lastConnected: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now }

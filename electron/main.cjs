@@ -2,6 +2,12 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const isDev = process.env.NODE_ENV === 'development';
 const { fork } = require('child_process');
+
+// Forzar compatibilidad máxima de codecs y certificados
+app.commandLine.appendSwitch('ignore-certificate-errors');
+app.commandLine.appendSwitch('disable-web-security');
+app.commandLine.appendSwitch('enable-features', 'Vulkan,D3D11VideoDecoder,HardwareAcceleration');
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 let serverProcess = null;
 
 function createWindow() {
@@ -40,12 +46,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  const { session } = require('electron');
-  // Configurar DNS sobre HTTPS (Cloudflare) para máxima privacidad
-  // Esto oculta qué dominios consulta la app, incluso si no pasan por el proxy.
-  session.defaultSession.setDNSOverHTTPS('https://cloudflare-dns.com/dns-query');
-  console.log('DNS over HTTPS (Cloudflare) activado.');
-  
   createWindow();
 });
 
