@@ -125,6 +125,8 @@ function App() {
 
           if (data.device.status === 'active') {
             localStorage.setItem('licenseStatus', 'premium');
+          } else {
+            localStorage.removeItem('licenseStatus');
           }
         }
       } catch (err) {

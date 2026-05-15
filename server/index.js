@@ -51,6 +51,7 @@ const Config = mongoose.model('Config', configSchema);
 
 const deviceSchema = new mongoose.Schema({
   deviceId: { type: String, unique: true },
+  name: { type: String, default: '' }, // Nombre del cliente
   status: { type: String, default: 'trial' }, // 'trial', 'active', 'blocked'
   activatedByPin: String, // NUEVO: Para saber qué PIN usó
   expiresAt: Date,
@@ -146,6 +147,12 @@ app.post('/api/devices/sync', async (req, res) => {
       device = new Device({ deviceId, status: 'trial', expiresAt: expires });
       await device.save();
     } else {
+      // LÓGICA DE CADUCIDAD: Si la fecha ha pasado, bloqueamos el dispositivo
+      if (device.expiresAt && device.expiresAt < new Date() && device.status !== 'blocked') {
+        console.log(`[EXPIRATION] Dispositivo ${deviceId} ha caducado. Bloqueando...`);
+        device.status = 'blocked';
+      }
+      
       device.lastConnected = new Date();
       await device.save();
     }
@@ -295,7 +302,7 @@ app.get('/api/proxy/stream', async (req, res) => {
 
 // -------- SISTEMA DE PINES (TELEGRAM VIP) --------
 app.post('/api/payments/verify', async (req, res) => {
-  const { pinCode } = req.body;
+  const { pinCode, deviceId } = req.body;
 
   if (pinCode && typeof pinCode === 'string') {
     const cleanedCode = pinCode.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -308,16 +315,31 @@ app.post('/api/payments/verify', async (req, res) => {
           return res.status(400).json({ success: false, message: 'Este Pin ya ha sido utilizado.' });
         }
 
-        // Quemar el pin en base de datos
+        // 1. Quemar el pin en base de datos
         codeRecord.status = 'used';
         codeRecord.usedAt = new Date();
         await codeRecord.save();
         
         console.log(`[PIN VERIFIED] Código de Activación Quemado: ${cleanedCode}`);
         
-        const issueDate = new Date();
-        const expirationDate = new Date();
-        expirationDate.setFullYear(issueDate.getFullYear() + 1);
+        // 2. Vincular con el dispositivo si se proporciona deviceId
+        let expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+        if (deviceId) {
+          try {
+            const device = await Device.findOne({ deviceId });
+            if (device) {
+              device.status = 'active';
+              device.activatedByPin = cleanedCode;
+              device.expiresAt = expirationDate;
+              await device.save();
+              console.log(`[DEVICE ACTIVATED] Dispositivo ${deviceId} ahora es PREMIUM hasta ${expirationDate.toISOString()}`);
+            }
+          } catch (e) {
+            console.error("Error al actualizar dispositivo tras pago:", e);
+          }
+        }
 
         return res.json({ 
           success: true, 
@@ -375,18 +397,25 @@ app.post('/api/admin/devices', async (req, res) => {
 });
 
 app.post('/api/admin/devices/update-status', async (req, res) => {
-  const { password, deviceId, status } = req.body;
+  const { password, deviceId, status, expiresAt, name } = req.body;
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
   
   try {
     const device = await Device.findOne({ deviceId });
     if (device) {
-      device.status = status;
-      if (status === 'active' && (!device.expiresAt || device.expiresAt < new Date())) {
+      if (status) device.status = status;
+      if (name !== undefined) device.name = name;
+      
+      // Si se envía una fecha específica, la usamos
+      if (expiresAt) {
+        device.expiresAt = new Date(expiresAt);
+      } else if (status === 'active' && (!device.expiresAt || device.expiresAt < new Date())) {
+        // Lógica por defecto de +1 año si no hay fecha manual y se activa
         const expires = new Date();
         expires.setFullYear(expires.getFullYear() + 1);
         device.expiresAt = expires;
       }
+      
       await device.save();
       res.json({ success: true });
     } else {

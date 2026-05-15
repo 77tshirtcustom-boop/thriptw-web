@@ -839,7 +839,10 @@ const DashboardLayout = ({
       const resp = await fetch(`${API_BASE_URL}/api/payments/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pinCode: activationCode })
+        body: JSON.stringify({ 
+          pinCode: activationCode,
+          deviceId: localStorage.getItem('thriptw_device_id')
+        })
       });
       const data = await resp.json();
       if (data.success) {

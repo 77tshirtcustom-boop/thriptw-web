@@ -7,14 +7,14 @@ import {
   Copy, 
   Trash2, 
   ShieldCheck, 
-  Clock, 
   RefreshCcw,
   CheckCircle,
   Lock,
   Smartphone,
   Trophy,
   ShieldAlert,
-  Plus
+  Plus,
+  Pencil
 } from 'lucide-react';
 import './AdminPanel.css';
 
@@ -35,6 +35,10 @@ const AdminPanel = () => {
   const [pinToDelete, setPinToDelete] = useState(null);
   const [deviceToDelete, setDeviceToDelete] = useState(null);
   const [showAddPinModal, setShowAddPinModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedDeviceForEdit, setSelectedDeviceForEdit] = useState(null);
+  const [tempName, setTempName] = useState('');
+  const [tempPin, setTempPin] = useState('');
 
 
   const isWeb = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
@@ -118,12 +122,12 @@ const AdminPanel = () => {
     }
   };
 
-  const handleUpdateDeviceStatus = async (deviceId, status) => {
+  const handleUpdateDeviceStatus = async (deviceId, status, expiresAt, name, pin) => {
     try {
       const resp = await fetch(`${API_BASE_URL}/api/admin/devices/update-status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, deviceId, status })
+        body: JSON.stringify({ password, deviceId, status, expiresAt, name, activatedByPin: pin })
       });
       if (resp.ok) fetchAllData();
     } catch (err) {
@@ -262,28 +266,28 @@ const AdminPanel = () => {
               <div className="admin-stat-card">
                 <span className="stat-label">TOTAL GENERADOS</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#f1c40f' }}>{stats.codes.total}</span>
+                  <span className="stat-number" style={{ color: '#f1c40f' }}>{stats?.codes?.total || 0}</span>
                   <Lock className="stat-icon" size={24} color="#f1c40f" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">DISPONIBLES</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#2ecc71' }}>{stats.codes.available}</span>
+                  <span className="stat-number" style={{ color: '#2ecc71' }}>{stats?.codes?.available || 0}</span>
                   <CheckCircle className="stat-icon" size={24} color="#2ecc71" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">CLIENTES</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#ff3131' }}>{stats.codes.used}</span>
+                  <span className="stat-number" style={{ color: '#ff3131' }}>{stats?.codes?.used || 0}</span>
                   <Key className="stat-icon" size={24} color="#ff3131" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">VENDIDOS</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#3498db' }}>{stats.devices.total}</span>
+                  <span className="stat-number" style={{ color: '#3498db' }}>{stats?.devices?.total || 0}</span>
                   <Smartphone className="stat-icon" size={24} color="#3498db" />
                 </div>
               </div>
@@ -346,28 +350,28 @@ const AdminPanel = () => {
               <div className="admin-stat-card">
                 <span className="stat-label">TOTAL</span>
                 <div className="stat-value-row">
-                  <span className="stat-number">{stats.devices.total}</span>
+                  <span className="stat-number">{stats?.devices?.total || 0}</span>
                   <Monitor className="stat-icon" size={24} color="#fff" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">EN PRUEBA</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#3498db' }}>{stats.devices.trial}</span>
+                  <span className="stat-number" style={{ color: '#3498db' }}>{stats?.devices?.trial || 0}</span>
                   <Smartphone className="stat-icon" size={24} color="#3498db" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">ACTIVADOS</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#2ecc71' }}>{stats.devices.active}</span>
+                  <span className="stat-number" style={{ color: '#2ecc71' }}>{stats?.devices?.active || 0}</span>
                   <Trophy className="stat-icon" size={24} color="#2ecc71" />
                 </div>
               </div>
               <div className="admin-stat-card">
                 <span className="stat-label">BLOQUEADOS</span>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#ff3131' }}>{stats.devices.blocked}</span>
+                  <span className="stat-number" style={{ color: '#ff3131' }}>{stats?.devices?.blocked || 0}</span>
                   <ShieldAlert className="stat-icon" size={24} color="#ff3131" />
                 </div>
               </div>
@@ -377,26 +381,26 @@ const AdminPanel = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th>CLIENTE</th>
                     <th>PIN</th>
                     <th>MAC</th>
                     <th>ESTADO</th>
                     <th>EXPIRA EN</th>
-                    <th>ÚLTIMA CONEXIÓN</th>
                     <th>ACCIONES</th>
                   </tr>
                 </thead>
                 <tbody>
                   {devices.map((d, idx) => (
                     <tr key={idx}>
+                      <td style={{ color: '#2ecc71', fontWeight: 'bold' }}>{d.name || '---'}</td>
                       <td style={{ color: '#f1c40f', fontWeight: 'bold' }}>{d.activatedByPin || '---'}</td>
                       <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{d.deviceId}</td>
                       <td>
-                        <span className={`status-tag ${d.status}`}>
-                          {d.status.toUpperCase()}
+                        <span className={`status-tag ${d.status || ''}`}>
+                          {(d.status || 'TRIAL').toUpperCase()}
                         </span>
                       </td>
                       <td>{d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : 'N/A'}</td>
-                      <td>{new Date(d.lastConnected).toLocaleString()}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           {d.status !== 'active' && (
@@ -417,6 +421,20 @@ const AdminPanel = () => {
                             style={{ color: d.status === 'blocked' ? '#f1c40f' : '#ff3131' }}
                           >
                             <ShieldAlert size={16} />
+                          </button>
+
+                           <button 
+                            className="btn-icon-action" 
+                            title="Editar Cliente" 
+                            onClick={() => {
+                              setSelectedDeviceForEdit(d);
+                              setTempName(d.name || '');
+                              setTempPin(d.activatedByPin || '');
+                              setShowEditModal(true);
+                            }}
+                            style={{ color: '#3498db' }}
+                          >
+                            <Pencil size={14} />
                           </button>
 
                           <button 
@@ -509,6 +527,58 @@ const AdminPanel = () => {
                 onClick={() => setShowAddPinModal(false)}
               >
                 CANCELAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && selectedDeviceForEdit && (
+        <div className="admin-modal-overlay fade-in" onClick={() => setShowEditModal(false)}>
+          <div className="admin-modal-card bounce-in" onClick={(e) => e.stopPropagation()}>
+            <h2 className="admin-modal-title">Editar Cliente</h2>
+            <p style={{ color: '#888', marginBottom: '20px' }}>MAC: {selectedDeviceForEdit.deviceId}</p>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', fontSize: '12px', color: '#888', marginBottom: '5px', textAlign: 'left' }}>NOMBRE DEL CLIENTE</label>
+              <input 
+                type="text" 
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                className="admin-input"
+                style={{ width: '100%', textAlign: 'left', padding: '12px', background: '#222', border: '1px solid #444' }}
+                placeholder="Ej: Juan Pérez"
+                autoFocus
+              />
+            </div>
+
+            <div style={{ marginBottom: '30px' }}>
+              <label style={{ display: 'block', fontSize: '12px', color: '#888', marginBottom: '5px', textAlign: 'left' }}>CÓDIGO PIN</label>
+              <input 
+                type="text" 
+                value={tempPin}
+                onChange={(e) => setTempPin(e.target.value)}
+                className="admin-input"
+                style={{ width: '100%', textAlign: 'left', padding: '12px', background: '#222', border: '1px solid #444', color: '#f1c40f' }}
+                placeholder="Ej: ABCD-1234-EFGH"
+              />
+            </div>
+
+            <div className="admin-modal-actions">
+              <button 
+                className="admin-btn-modal-cancel" 
+                onClick={() => setShowEditModal(false)}
+              >
+                CANCELAR
+              </button>
+              <button 
+                className="admin-btn-modal-confirm" 
+                onClick={() => {
+                  handleUpdateDeviceStatus(selectedDeviceForEdit.deviceId, null, null, tempName, tempPin);
+                  setShowEditModal(false);
+                }}
+              >
+                GUARDAR
               </button>
             </div>
           </div>
