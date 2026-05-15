@@ -291,9 +291,11 @@ function App() {
 
   // 2. Dispositivo Bloqueado
   if (deviceStatus === 'blocked') {
+    const isExpired = trialDaysLeft <= 0;
+    
     return (
       <div style={{ 
-        background: 'linear-gradient(135deg, #000 0%, #300 100%)', 
+        background: 'linear-gradient(135deg, #050505 0%, #1a0505 100%)', 
         height: '100vh', 
         display: 'flex', 
         flexDirection: 'column', 
@@ -302,20 +304,49 @@ function App() {
         color: '#fff',
         textAlign: 'center',
         padding: '20px',
-        fontFamily: 'system-ui, sans-serif'
+        fontFamily: 'system-ui, sans-serif',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ background: '#ff3131', padding: '20px', borderRadius: '50%', marginBottom: '30px', boxShadow: '0 0 50px rgba(255,49,49,0.4)' }}>
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {/* Glow de fondo */}
+        <div style={{ position: 'absolute', width: '300px', height: '300px', background: '#ff3131', filter: 'blur(150px)', opacity: 0.1, zIndex: 0 }}></div>
+
+        <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ background: '#ff3131', padding: '25px', borderRadius: '50%', marginBottom: '30px', boxShadow: '0 0 60px rgba(255,49,49,0.5)', animation: 'pulse 2s infinite' }}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+
+          <h1 style={{ fontSize: '48px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-1px' }}>
+            {isExpired ? 'SUSCRIPCIÓN CADUCADA' : 'ACCESO DENEGADO'}
+          </h1>
+          
+          <p style={{ fontSize: '22px', opacity: 0.8, maxWidth: '600px', marginBottom: '40px', lineHeight: '1.4' }}>
+            {isExpired 
+              ? 'Tu licencia de 12 meses ha llegado a su fin. Para seguir disfrutando del mejor contenido, por favor contacta con tu proveedor para renovar.'
+              : 'Este dispositivo ha sido restringido por el administrador. Contacta con soporte para más información.'}
+          </p>
+
+          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '25px 40px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+            <span style={{ fontSize: '13px', opacity: 0.5, display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>ID DE TU DISPOSITIVO:</span>
+            <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'monospace', color: '#ff3131', letterSpacing: '2px' }}>{localStorage.getItem('thriptw_device_id')}</span>
+          </div>
+
+          <p style={{ marginTop: '50px', fontSize: '16px', color: '#888', fontWeight: '500' }}>
+            {isExpired ? 'PROPORCIONA ESTE ID PARA UNA RENOVACIÓN RÁPIDA' : 'SOPORTE TÉCNICO: THRIPTW'}
+          </p>
         </div>
-        <h1 style={{ fontSize: '42px', fontWeight: '900', marginBottom: '10px' }}>ACCESO DENEGADO</h1>
-        <p style={{ fontSize: '20px', opacity: 0.8, maxWidth: '500px', marginBottom: '40px' }}>
-          Este dispositivo ha sido bloqueado por violar los términos de servicio o por falta de pago.
-        </p>
-        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '15px 30px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <span style={{ fontSize: '14px', opacity: 0.6, display: 'block', marginBottom: '5px' }}>ID DE DISPOSITIVO:</span>
-          <span style={{ fontSize: '22px', fontWeight: 'bold', fontFamily: 'monospace', color: '#ff3131' }}>{localStorage.getItem('thriptw_device_id')}</span>
-        </div>
-        <p style={{ marginTop: '40px', fontSize: '16px', color: '#888' }}>Contacta con soporte para desbloquear tu cuenta.</p>
+
+        <style>{`
+          @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 60px rgba(255,49,49,0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 90px rgba(255,49,49,0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 60px rgba(255,49,49,0.5); }
+          }
+        `}</style>
       </div>
     );
   }

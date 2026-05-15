@@ -147,9 +147,10 @@ app.post('/api/devices/sync', async (req, res) => {
       device = new Device({ deviceId, status: 'trial', expiresAt: expires });
       await device.save();
     } else {
-      // LÓGICA DE CADUCIDAD: Si la fecha ha pasado, bloqueamos el dispositivo
-      if (device.expiresAt && device.expiresAt < new Date() && device.status !== 'blocked') {
-        console.log(`[EXPIRATION] Dispositivo ${deviceId} ha caducado. Bloqueando...`);
+      // LÓGICA DE CADUCIDAD ESTRICTA: Bloqueo automático al terminar el periodo (Trial o 12 meses)
+      const now = new Date();
+      if (device.expiresAt && device.expiresAt < now && device.status !== 'blocked') {
+        console.log(`[SUBSCRIPTION EXPIRED] Device ${deviceId} reached end of term. Blocking access.`);
         device.status = 'blocked';
       }
       
