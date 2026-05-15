@@ -2794,9 +2794,9 @@ const DashboardLayout = ({
                   </div>
                 </div>
 
-                {!isPremium && !isTrialExpired && (
+                {isPremium && (
                   <div className="trial-badge" style={{ 
-                    color: '#f1c40f', 
+                    color: '#2ecc71', 
                     fontSize: '15px', 
                     fontWeight: '800', 
                     marginTop: '5px', 
@@ -2811,9 +2811,10 @@ const DashboardLayout = ({
                     textAlign: 'center'
                   }}>
                     <Timer size={18} />
-                    {tr.settings.freeTrial}: {trialDaysLeft} {trialDaysLeft === 1 ? 'día restante' : 'días restantes'}
+                    Licencia Premium
                   </div>
                 )}
+
 
                 {!isPremium ? (
                   <div className="license-button-container fade-in" style={{ marginBottom: '10px', width: '100%', display: 'flex', justifyContent: 'center' }}>

@@ -421,6 +421,12 @@ app.post('/api/admin/devices/update-status', async (req, res) => {
         expires.setFullYear(expires.getFullYear() + 1);
         device.expiresAt = expires;
         device.status = 'active';
+      } else if (status === 'trial') {
+        // Lógica de DESACTIVACIÓN: Volver al periodo original de 7 días
+        const expires = new Date(device.createdAt || new Date());
+        expires.setDate(expires.getDate() + 7);
+        device.expiresAt = expires;
+        device.status = 'trial';
       }
       
       await device.save();

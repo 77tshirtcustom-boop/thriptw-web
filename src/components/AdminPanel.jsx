@@ -59,6 +59,7 @@ const AdminPanel = () => {
   const [selectedDeviceForEdit, setSelectedDeviceForEdit] = useState(null);
   const [tempName, setTempName] = useState('');
   const [tempPin, setTempPin] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   const isWeb = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
@@ -395,6 +396,30 @@ const AdminPanel = () => {
                   <ShieldAlert className="stat-icon" size={24} color="#ff3131" />
                 </div>
               </div>
+              <div className="admin-stat-card" style={{ border: '1px solid rgba(241, 196, 15, 0.3)' }}>
+                <span className="stat-label">CADUCAN PRONTO</span>
+                <div className="stat-value-row">
+                  <span className="stat-number" style={{ color: '#f1c40f' }}>
+                    {devices.filter(d => {
+                      if (!d.expiresAt || d.status !== 'active') return false; // Solo contamos clientes ACTIVOS
+                      const diff = new Date(d.expiresAt) - new Date();
+                      return diff > 0 && diff < (7 * 24 * 60 * 60 * 1000);
+                    }).length}
+                  </span>
+                  <RefreshCcw className="stat-icon" size={24} color="#f1c40f" />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '20px', width: '100%' }}>
+              <input 
+                type="text" 
+                placeholder="🔍 BUSCAR POR NOMBRE, PIN O MAC..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="admin-input"
+                style={{ width: '100%', textAlign: 'left', padding: '14px 20px', fontSize: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+              />
             </div>
 
             <div className="admin-table-wrapper">
@@ -411,7 +436,16 @@ const AdminPanel = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {devices.map((d, idx) => (
+                  {devices
+                    .filter(d => {
+                      const searchLower = searchTerm.toLowerCase();
+                      return (
+                        (d.name || '').toLowerCase().includes(searchLower) ||
+                        (d.activatedByPin || '').toLowerCase().includes(searchLower) ||
+                        (d.deviceId || '').toLowerCase().includes(searchLower)
+                      );
+                    })
+                    .map((d, idx) => (
                     <tr key={idx}>
                       <td style={{ color: '#2ecc71', fontWeight: 'bold' }}>{d.name || '---'}</td>
                       <td style={{ color: '#f1c40f', fontWeight: 'bold' }}>{d.activatedByPin || '---'}</td>
