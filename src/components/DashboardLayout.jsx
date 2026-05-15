@@ -2603,7 +2603,7 @@ const DashboardLayout = ({
                             }}
                           >
                             <div className="episode-text-info">
-                              <h4 className="episode-text-title">S{String(currentSeason.seasonNumber).padStart(2, '0')}E{String(ep.epNumber).padStart(2, '0')}</h4>
+                              <h4 className="episode-text-title">S{String(currentSeason.seasonNumber).padStart(2, '0')}E{String(ep.epNumber).padStart(2, '0')} - {series.title}</h4>
                               <span className="episode-text-duration">{ep.duration || ''}</span>
                             </div>
                             <div className="episode-text-action">
@@ -3596,7 +3596,7 @@ const DashboardLayout = ({
           channels={
             playingMedia.category === 'TV'
               ? (playlistData.channels || [])
-              : (playlistData.movies || [])
+              : (playlistData.movies || []).filter(m => m.groupId === playingMedia.groupId)
           }
           onSelectChannel={(ch) => setPlayingMedia(ch)}
           isSeries={playingMedia.isSeries}

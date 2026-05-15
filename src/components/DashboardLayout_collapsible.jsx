@@ -1636,9 +1636,9 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
                       <div className="episodes-list fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {currentSeason.episodes.map(ep => (
-                          <div key={ep.id} className="episode-card-text-only" onClick={() => setPlayingMedia({ ...ep, parentTitle: series.title })}>
+                          <div key={ep.id} className="episode-card-text-only" onClick={() => setPlayingMedia({ ...ep, parentTitle: series.title, seriesId: series.id })}>
                             <div className="episode-text-info">
-                              <h4 className="episode-text-title">S{String(currentSeason.seasonNumber).padStart(2, '0')}E{String(ep.epNumber).padStart(2, '0')}</h4>
+                              <h4 className="episode-text-title">S{String(currentSeason.seasonNumber).padStart(2, '0')}E{String(ep.epNumber).padStart(2, '0')} - {series.title}</h4>
                               <span className="episode-text-duration">{ep.duration || ''}</span>
                             </div>
                             <div className="episode-text-action">
@@ -2064,14 +2064,37 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       </div>
 
       {/* REPRODUCTOR DE VIDEO ROOT */}
-      {playingMedia && (
-        <VideoPlayer 
-          media={playingMedia} 
-          onClose={() => setPlayingMedia(null)} 
-          onNext={MOCK_CHANNELS.find(c => c.id === playingMedia.id) ? handleNextChannel : undefined}
-          onPrev={MOCK_CHANNELS.find(c => c.id === playingMedia.id) ? handlePrevChannel : undefined}
-        />
-      )}
+      {playingMedia && (() => {
+        const isLive = MOCK_CHANNELS.some(c => c.id === playingMedia.id);
+        const isSeries = !!playingMedia.parentTitle || !!playingMedia.seriesName;
+        const isMovie = !isLive && !isSeries;
+        
+        let relatedItems = [];
+        let seasons = [];
+        
+        if (isLive) {
+          relatedItems = displayedChannels;
+        } else if (isMovie) {
+          relatedItems = MOCK_MOVIES.filter(m => m.groupId === playingMedia.groupId);
+        } else if (isSeries) {
+          const sId = playingMedia.seriesId || selectedSeriesId;
+          seasons = movieDetails[sId]?.seasons || [];
+        }
+        
+        return (
+          <VideoPlayer 
+            media={playingMedia} 
+            isLive={isLive}
+            isSeries={isSeries}
+            channels={relatedItems}
+            seasons={seasons}
+            onSelectChannel={(item) => setPlayingMedia(item)}
+            onClose={() => setPlayingMedia(null)} 
+            onNext={isLive ? handleNextChannel : undefined}
+            onPrev={isLive ? handlePrevChannel : undefined}
+          />
+        );
+      })()}
 
       {/* MODAL DEL QR DE PAGO (3 PASOS TELEGRAM) */}
       {showQRModal && (

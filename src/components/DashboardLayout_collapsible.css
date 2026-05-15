@@ -697,6 +697,19 @@
   background-color: #ff3333;
 }
 
+body.tv-navigation-active .btn-play-movie:focus {
+  background-color: #f1c40f !important;
+  color: #ffffff !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.5) !important;
+}
+
+body.tv-navigation-active .btn-play-movie:focus * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
 .btn-fav-movie {
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
@@ -713,6 +726,19 @@
 .btn-fav-movie:hover {
   background: rgba(255,255,255,0.2);
   transform: scale(1.1);
+}
+
+body.tv-navigation-active .btn-fav-movie:focus {
+  background-color: #f1c40f !important;
+  color: #ffffff !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.5) !important;
+}
+
+body.tv-navigation-active .btn-fav-movie:focus * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 .btn-fav-movie.favorited {
@@ -1094,6 +1120,15 @@
   color: white;
 }
 
+body.tv-navigation-active .season-tab:focus {
+  background-color: #f1c40f !important;
+  color: #ffffff !important;
+  outline: none !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 20px;
+}
+
 .season-tab.active::after {
   content: '';
   position: absolute;
@@ -1127,6 +1162,19 @@
   background: rgba(255, 255, 255, 0.08);
   transform: translateX(10px);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.tv-navigation-active .episode-card:focus {
+  background-color: #f1c40f !important;
+  color: #ffffff !important;
+  outline: none !important;
+  border: none !important;
+  transform: translateX(10px);
+}
+
+body.tv-navigation-active .episode-card:focus * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 .episode-thumbnail-container {
@@ -2422,18 +2470,17 @@ input:checked + .slider:before {
 }
 
 .episode-text-action {
-  background: var(--primary-red);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  background: transparent;
+  width: auto;
+  height: auto;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 10px rgba(217, 30, 24, 0.4);
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
 .episode-card-text-only:hover .episode-text-action {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(217, 30, 24, 0.6);
+  transform: scale(1.2);
 }

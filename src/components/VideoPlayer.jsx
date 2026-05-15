@@ -46,6 +46,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev, useAntiBloqueo = false, i
   const [selectedAudioIdx, setSelectedAudioIdx] = useState(-1);
   const [selectedSubtitleIdx, setSelectedSubtitleIdx] = useState(-1);
   const [retryWithProxy, setRetryWithProxy] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const hlsRef = useRef(null);
   const loadingRef = useRef(true);
@@ -117,6 +118,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev, useAntiBloqueo = false, i
       clearTimeout(loadingTimeout);
       video.play().then(() => {
         setIsPlaying(true);
+        setHasStarted(true);
         setIsLoading(false);
         loadingRef.current = false;
         if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
@@ -435,7 +437,11 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev, useAntiBloqueo = false, i
 
         {!isLoading && (
           <div className="center-play-pause" onClick={togglePlay}>
-            {!isPlaying && <div className="big-play-btn"><Play size={48} fill="currentColor" /></div>}
+            {!isPlaying && (
+              <div className={`big-play-btn ${hasStarted ? 'is-paused' : ''}`}>
+                <Play size={hasStarted ? 56 : 36} fill="currentColor" />
+              </div>
+            )}
           </div>
         )}
 
@@ -519,8 +525,7 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev, useAntiBloqueo = false, i
                 id="sn-player-menu" 
                 className="player-icon-btn focusable" 
                 onClick={() => {
-                  if (isLive) setActiveMenu(activeMenu === 'channels' ? null : 'channels');
-                  // En Películas/Series no hace nada por ahora
+                  setActiveMenu(activeMenu === 'channels' ? null : 'channels');
                 }} 
                 onKeyDown={(e) => {
                   if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); document.getElementById('sn-player-mute')?.focus(); }
@@ -572,8 +577,8 @@ const VideoPlayer = ({ media, onClose, onNext, onPrev, useAntiBloqueo = false, i
                   const s = seasons[selectedSeasonIdx] || seasons[0];
                   items = s.episodes.map(ep => ({
                     ...ep,
-                    id: ep.id || `ep_${ep.episodeNumber}`,
-                    name: `T${s.seasonNumber} E${ep.episodeNumber}: ${ep.title}`
+                    id: ep.id || `ep_${ep.epNumber || ep.episodeNumber}`,
+                    name: `T${s.seasonNumber} E${ep.epNumber || ep.episodeNumber}: ${ep.title}`
                   }));
                 }
                 return items.map((ch, idx) => (

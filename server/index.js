@@ -397,7 +397,7 @@ app.post('/api/admin/devices', async (req, res) => {
 });
 
 app.post('/api/admin/devices/update-status', async (req, res) => {
-  const { password, deviceId, status, expiresAt, name } = req.body;
+  const { password, deviceId, status, expiresAt, name, activatedByPin } = req.body;
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
   
   try {
@@ -406,10 +406,18 @@ app.post('/api/admin/devices/update-status', async (req, res) => {
       if (status) device.status = status;
       if (name !== undefined) device.name = name;
       
+      if (activatedByPin !== undefined) {
+        device.activatedByPin = activatedByPin;
+        // Auto-activar si se pone un PIN válido
+        if (activatedByPin.length >= 12 && device.status === 'trial') {
+          device.status = 'active';
+        }
+      }
+      
       // Si se envía una fecha específica, la usamos
       if (expiresAt) {
         device.expiresAt = new Date(expiresAt);
-      } else if (status === 'active' && (!device.expiresAt || device.expiresAt < new Date())) {
+      } else if (device.status === 'active' && (!device.expiresAt || device.expiresAt < new Date())) {
         // Lógica por defecto de +1 año si no hay fecha manual y se activa
         const expires = new Date();
         expires.setFullYear(expires.getFullYear() + 1);

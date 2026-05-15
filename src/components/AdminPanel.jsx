@@ -385,7 +385,8 @@ const AdminPanel = () => {
                     <th>PIN</th>
                     <th>MAC</th>
                     <th>ESTADO</th>
-                    <th>EXPIRA EN</th>
+                    <th>INSTALADO</th>
+                    <th>EXPIRA</th>
                     <th>ACCIONES</th>
                   </tr>
                 </thead>
@@ -400,7 +401,8 @@ const AdminPanel = () => {
                           {(d.status || 'TRIAL').toUpperCase()}
                         </span>
                       </td>
-                      <td>{d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : 'N/A'}</td>
+                      <td style={{ fontSize: '13px', color: '#fff', fontWeight: '500' }}>{d.createdAt ? new Date(d.createdAt).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '---'}</td>
+                      <td style={{ fontWeight: 'bold', color: d.status === 'active' ? '#2ecc71' : '#fff' }}>{d.expiresAt ? new Date(d.expiresAt).toLocaleDateString() : 'N/A'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           {(d.status || 'trial').toLowerCase() !== 'active' && (
@@ -573,12 +575,14 @@ const AdminPanel = () => {
               </button>
               <button 
                 className="admin-btn-modal-confirm" 
-                onClick={() => {
-                  handleUpdateDeviceStatus(selectedDeviceForEdit.deviceId, null, null, tempName, tempPin);
+                onClick={async () => {
+                  // Si el usuario mete un PIN manualmente, lo activamos automáticamente por comodidad
+                  const newStatus = tempPin.length >= 12 ? 'active' : null;
+                  await handleUpdateDeviceStatus(selectedDeviceForEdit.deviceId, newStatus, null, tempName, tempPin);
                   setShowEditModal(false);
                 }}
               >
-                GUARDAR
+                GUARDAR CAMBIOS
               </button>
             </div>
           </div>
