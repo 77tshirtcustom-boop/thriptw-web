@@ -1,7 +1,16 @@
+.login-screen-wrapper {
+  background-color: #050505;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .login-container {
   width: 100%;
   max-width: 420px;
-  padding: 20px;
+  padding: 70px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,7 +68,7 @@
   background-color: var(--panel-bg);
   width: 100%;
   border-radius: 20px;
-  padding: 24px;
+  padding: 30px 24px 24px 24px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -150,7 +159,7 @@
 
 /* Submit Button */
 .submit-btn {
-  width: 100%;
+  width: 320px;
   height: 56px;
   background-color: var(--primary-red);
   color: white;
@@ -161,7 +170,7 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-top: 30px;
+  margin: 30px auto 0 auto; /* Centrado horizontal */
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(217, 30, 24, 0.3);
   cursor: pointer;
@@ -184,3 +193,22 @@
 .submit-icon {
   opacity: 1;
 }
+
+/* Secondary Button (Ghost style) */
+.submit-btn.btn-secondary {
+  margin-top: 12px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.submit-btn.btn-secondary:hover,
+body.tv-navigation-active .submit-btn.btn-secondary:focus {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+

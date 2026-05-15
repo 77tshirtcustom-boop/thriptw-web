@@ -1,30 +1,33 @@
 const isWebSvc = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
-const API_BASE_URL = isWebSvc ? window.location.origin : 'https://thriptw-web.onrender.com';
+const isElectron = typeof window !== 'undefined' && window.process && window.process.type === 'renderer' || navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+const API_BASE_URL = isWebSvc ? window.location.origin : (isElectron ? 'http://localhost:3001' : 'https://thriptw-web.onrender.com');
 
-export const fetchXtreamData = async (serverUrl, username, password) => {
+
+
+export const fetchXtreamData = async (serverUrl, username, password, useAntiBloqueo = false) => {
   const baseUrl = serverUrl.replace(/\/+$/, '');
 
-  console.log('Interceptando Xtream Codes API vía Proxy Local:', baseUrl);
+  console.log(`[Anti-Bloqueo: ${useAntiBloqueo ? 'ON' : 'OFF'}] Interceptando Xtream Codes API:`, baseUrl);
   
   const proxyFetch = async (action) => {
     const actionParam = action ? `&action=${action}` : '';
-    // Añadimos &t= para romper el caché del servidor y del navegador
-    const directUrl = `${baseUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}${actionParam}&t=${Date.now()}`;
+    const timestamp = Date.now();
+    const directUrl = `${baseUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}${actionParam}&t=${timestamp}`;
+
     
-    // 1. Intento Directo (Solo si no estamos en el EXE y queremos velocidad)
-    const isEXE = window.location.protocol === 'file:';
-    if (!isEXE) {
+    // 1. Intento Directo (Siempre primero, a menos que se fuerce Anti-Bloqueo)
+    if (!useAntiBloqueo) {
       try {
         const resp = await fetch(directUrl);
-        if (resp.ok) {
-          return await resp.json();
-        }
+        if (resp.ok) return await resp.json();
+        throw new Error(`Direct fetch failed with status: ${resp.status}`);
       } catch (e) {
-        console.log('Falló el fetch directo, intentando proxy...', e);
+        console.error('Error en conexión directa:', e);
+        throw e; // No reintentamos por proxy si el usuario lo quiere desactivado
       }
     }
 
-    // 2. Fallback Proxy (Útil solo para PWA / Navegadores donde existe Node backend activo)
+    // 2. Solo si Anti-Bloqueo está ON, usamos el servidor local como túnel
     try {
       const response = await fetch(`${API_BASE_URL}/api/proxy/xtream`, {
         method: 'POST',
@@ -34,7 +37,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
       if (!response.ok) throw new Error('Error en proxy fetch');
       return await response.json();
     } catch (e) {
-      console.warn('Fallo en petición Xtream:', action, e);
+      console.warn('Fallo en petición con Anti-Bloqueo:', action, e);
       return [];
     }
   };
@@ -71,7 +74,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
       epg: 'En Directo',
       img: ch.stream_icon || '',
       groupId: catMap[ch.category_id] || 'General',
-      url: `${baseUrl}/live/${username}/${password}/${ch.stream_id}.m3u8`,
+      url: useAntiBloqueo ? `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(`${baseUrl}/live/${username}/${password}/${ch.stream_id}.m3u8`)}` : `${baseUrl}/live/${username}/${password}/${ch.stream_id}.m3u8`,
       category: 'TV'
     }));
 
@@ -86,7 +89,7 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
       cast: 'Desconocido',
       synopsis: m.name,
       genre: catMap[m.category_id] || 'Películas',
-      url: `${baseUrl}/movie/${username}/${password}/${m.stream_id}.${m.container_extension || 'mp4'}`,
+      url: useAntiBloqueo ? `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(`${baseUrl}/movie/${username}/${password}/${m.stream_id}.${m.container_extension || 'mp4'}`)}` : `${baseUrl}/movie/${username}/${password}/${m.stream_id}.${m.container_extension || 'mp4'}`,
       backdrop: m.stream_icon || ''
     }));
 
@@ -111,10 +114,15 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
       return Array.from(set).map(g => ({ id: g, name: g }));
     };
 
+    // 0. Obtenemos información de la cuenta (User Info)
+    const accountData = await proxyFetch();
+    const account_info = accountData?.user_info || null;
+
     return { 
       channels, 
       movies, 
       series, 
+      account_info,
       categories: getCats(channels),
       movieCategories: getCats(movies),
       seriesCategories: getCats(series)
@@ -123,5 +131,52 @@ export const fetchXtreamData = async (serverUrl, username, password) => {
   } catch (error) {
     console.error("Fallo maestro conectando a Xtream Codes:", error);
     throw new Error('No se pudo procesar la respuesta del servidor Proxy.');
+  }
+};
+
+export const fetchSeriesInfo = async (serverUrl, username, password, seriesId, useAntiBloqueo = false) => {
+  const baseUrl = serverUrl.replace(/\/+$/, '');
+  const timestamp = Date.now();
+  const directUrl = `${baseUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&action=get_series_info&series_id=${seriesId}&t=${timestamp}`;
+
+  try {
+    let data;
+    if (!useAntiBloqueo) {
+      const resp = await fetch(directUrl);
+      data = await resp.json();
+    } else {
+      const response = await fetch(`${API_BASE_URL}/api/proxy/xtream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: baseUrl, username, password, action: 'get_series_info', series_id: seriesId })
+      });
+      data = await response.json();
+    }
+
+    if (!data || !data.episodes) return null;
+
+    // Procesamos las temporadas y episodios
+    const seasons = Object.keys(data.episodes).map(seasonNum => {
+      const episodes = data.episodes[seasonNum].map(ep => ({
+        id: `ep_${ep.id}`,
+        episodeNumber: ep.episode_num,
+        title: ep.title || `Episodio ${ep.episode_num}`,
+        duration: ep.info?.duration || 'N/A',
+        url: useAntiBloqueo 
+          ? `${API_BASE_URL}/api/proxy/stream?url=${encodeURIComponent(`${baseUrl}/series/${username}/${password}/${ep.id}.${ep.container_extension || 'mp4'}`)}`
+          : `${baseUrl}/series/${username}/${password}/${ep.id}.${ep.container_extension || 'mp4'}`
+      }));
+
+      return {
+        seasonNumber: parseInt(seasonNum),
+        episodes
+      };
+    });
+
+    return { seasons, info: data.info };
+
+  } catch (e) {
+    console.error('Error cargando episodios de la serie:', e);
+    return null;
   }
 };

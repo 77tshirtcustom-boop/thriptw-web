@@ -1,8 +1,8 @@
 /* Import Inter Font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-color: #0A0A0A;
+  --bg-color: #050505;
   --panel-bg: #111111;
   --input-bg: #0A0A0A;
   --primary-red: #D91E18;
@@ -33,22 +33,7 @@ body {
   overflow-x: hidden; /* Avoid Windows 100vw bug */
 }
 
-/* 📺 TV SAFE AREA (OVERSCAN) ADJUSTMENT */
-body.tv-navigation-active {
-  padding: 3.5% 5% !important; /* Margen de seguridad para que no se corte en los bordes de la TV */
-  box-sizing: border-box;
-  overflow: hidden; /* No scroll en el body principal en TVs */
-  height: 100vh;
-  width: 100vw;
-}
 
-body.tv-navigation-active #root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 button {
   cursor: pointer;
@@ -82,37 +67,155 @@ input:focus {
 
 body.tv-navigation-active .focusable:focus, 
 body.tv-navigation-active .focusable:focus-visible {
-  outline: 2px solid #F1C40F !important; /* Borde más fino y elegante */
-  outline-offset: 3px !important;
-  box-shadow: 0 0 12px rgba(241, 196, 15, 0.4) !important;
-  transform: scale(1.03); /* Resalte más sutil */
-  z-index: 100;
+  outline: 3px solid #f1c40f !important;
+  outline-offset: 1px !important;
 }
 
-/* En modo PC/Escritorio, el foco es normal y discreto */
-.focusable:focus-visible {
-  outline: none;
-}
-
-/* Cambiar stroke/color a amarillo en iconos (como Lucide-react) al tener foco */
-body.tv-navigation-active .focusable:focus svg, 
-body.tv-navigation-active .focusable:focus-visible svg {
-  color: #F1C40F !important;
-  stroke: #F1C40F !important;
-}
-
-/* Excepción: En la barra de navegación inferior, solo cambia el color, sin cuadro */
-body.tv-navigation-active .bottom-nav .nav-item.focusable:focus, 
-body.tv-navigation-active .bottom-nav .nav-item.focusable:focus-visible {
+/* Big border for all poster types */
+body.tv-navigation-active .movie-poster-card.focusable:focus,
+body.tv-navigation-active .similar-movie-card.focusable:focus,
+body.tv-navigation-active .media-card-custom.focusable:focus {
   outline: none !important;
-  background-color: transparent !important;
-  box-shadow: none !important; 
-  text-shadow: none !important;
-  transform: scale(1.1) !important;
+  border: 3px solid #f1c40f !important;
+  transform: none !important;
 }
 
-/* Color de selección de texto */
-::selection {
-  background-color: var(--primary-red);
-  color: #000;
+/* Icons change to yellow on focus */
+body.tv-navigation-active .focusable:focus svg {
+  color: #f1c40f !important;
+  stroke: #f1c40f !important;
+}
+
+/* Side Menu (Drawer) Focus Exception */
+body.tv-navigation-active .drawer .menu-item.focusable:focus {
+  outline: none !important;
+  background-color: #f1c40f !important;
+  border-radius: 4px;
+}
+
+body.tv-navigation-active .drawer .menu-item.focusable:focus .menu-label,
+body.tv-navigation-active .drawer .menu-item.focusable:focus .menu-count,
+body.tv-navigation-active .drawer .menu-item.focusable:focus .menu-arrow,
+body.tv-navigation-active .drawer .menu-item.focusable:focus .menu-icon {
+  color: #FFF !important;
+}
+
+/* Custom Dropdown for TV */
+.custom-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.custom-dropdown-item {
+  padding: 12px 16px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  border-bottom: 1px solid #222;
+}
+
+.custom-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+body.tv-navigation-active .custom-dropdown-item:focus {
+  outline: 2px solid #f1c40f !important;
+  outline-offset: -2px !important;
+  color: #f1c40f !important;
+}
+
+/* Ensure text and icons inside focused buttons are white as requested */
+body.tv-navigation-active #sn-refresh-list:focus,
+body.tv-navigation-active #sn-add-list:focus,
+body.tv-navigation-active [id^="sn-add-"]:focus,
+body.tv-navigation-active #sn-speed:focus,
+body.tv-navigation-active #sn-close-speedtest:focus,
+body.tv-navigation-active .channel-card:focus {
+  outline: none !important;
+  background-color: #f1c40f !important;
+  color: #fff !important;
+  border-radius: 8px;
+}
+
+body.tv-navigation-active #sn-refresh-list:focus *,
+body.tv-navigation-active #sn-add-list:focus *,
+body.tv-navigation-active [id^="sn-add-"]:focus *,
+body.tv-navigation-active #sn-speed:focus *,
+body.tv-navigation-active #sn-close-speedtest:focus *,
+body.tv-navigation-active .channel-card:focus * {
+  color: #fff !important;
+  stroke: #fff !important;
+}
+
+/* Ring for standalone icons (like in top bar and specific actions) */
+body.tv-navigation-active .top-bar .focusable:focus,
+body.tv-navigation-active .channel-action .star-icon.focusable:focus {
+  outline: 3px solid #f1c40f !important;
+  outline-offset: 2px !important;
+  background-color: transparent !important;
+  color: #f1c40f !important;
+}
+
+/* Icons Exception (Logout, Bottom Nav) */
+body.tv-navigation-active .bottom-nav .nav-item.focusable:focus,
+body.tv-navigation-active .drawer-bottom .nav-item.focusable:focus {
+  outline: none !important;
+  color: #f1c40f !important;
+  background-color: transparent !important;
+}
+
+body.tv-navigation-active .bottom-nav .nav-item.focusable:focus *,
+body.tv-navigation-active .drawer-bottom .nav-item.focusable:focus * {
+  color: #f1c40f !important;
+  stroke: #f1c40f !important;
+}
+
+/* Solid Focus Exception (Yellow) */
+body.tv-navigation-active #sn-cancel-delete:focus,
+body.tv-navigation-active #sn-confirm-delete:focus,
+body.tv-navigation-active #sn-cancel-hist-delete:focus,
+body.tv-navigation-active #sn-confirm-hist-delete:focus,
+body.tv-navigation-active #sn-license:focus,
+body.tv-navigation-active #sn-license-coll:focus,
+body.tv-navigation-active #sn-login-submit:focus {
+  outline: none !important;
+  background-color: #f1c40f !important; /* Amarillo sólido */
+  color: #000000 !important;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+}
+
+/* White text for license focus specifically if requested */
+body.tv-navigation-active #sn-license:focus,
+body.tv-navigation-active #sn-license-coll:focus {
+  color: #ffffff !important;
+}
+
+body.tv-navigation-active #sn-login-submit:focus *,
+body.tv-navigation-active #sn-cancel-hist-delete:focus *,
+body.tv-navigation-active #sn-confirm-hist-delete:focus * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Historial Delete Button Focus */
+body.tv-navigation-active .movie-del-btn.focusable:focus {
+  outline: none !important;
+  background-color: #f1c40f !important;
+  color: #000000 !important;
+  transform: scale(1.1);
+}
+
+body.tv-navigation-active .movie-del-btn.focusable:focus svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
 }

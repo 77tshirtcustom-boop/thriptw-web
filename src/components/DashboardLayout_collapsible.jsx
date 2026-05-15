@@ -29,11 +29,116 @@ import {
   Home,
   PlusCircle,
   Maximize,
-  Minimize
+  Minimize,
+  ThumbsUp,
+  ShieldCheck,
+  Pencil,
+  Timer,
+  ChevronDown
 } from 'lucide-react';
 import './DashboardLayout.css';
 import VideoPlayer from './VideoPlayer';
 import { translations } from '../i18n/translations';
+
+const CustomLiveIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 13c0-3.31-2.69-6-6-6s-6 2.69-6 6c0 2.22 1.21 4.15 3 5.19l1-1.74c-1.19-.7-2-1.97-2-3.45 0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.48-.81 2.75-2 3.45l1 1.74c1.79-1.04 3-2.97 3-5.19zM12 3C6.48 3 2 7.48 2 13c0 3.7 2.01 6.92 5 8.66l1-1.74C5.61 18.53 4 15.96 4 13c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.96-1.61 5.53-4 6.92l1 1.74c2.99-1.74 5-4.96 5-8.66 0-5.52-4.48-10-10-10z" />
+    <circle cx="12" cy="13" r="2" />
+  </svg>
+);
+
+const SolidHomeIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
+  </svg>
+);
+
+const SolidHomeIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
+  </svg>
+);
+
+const SolidTvIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM9 10v8l7-4-7-4z"/>
+  </svg>
+);
+
+const SolidFilmIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 010 4v4a2 2 0 002 2h16a2 2 0 002-2v-4a2 2 0 010-4z" />
+    <path d="M10 8.5l6 3.5-6 3.5v-7z" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const SolidSeriesIcon = ({ size = 24, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="2" y="4" width="20" height="13" rx="2" />
+    <path d="M9 17v2a1 1 0 001 1h4a1 1 0 001-1v-2" />
+    <path d="M8 20h8" />
+    <path d="M10 8.5l5 2.5-5 2.5v-5z" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const SolidSettingsIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+  </svg>
+);
+
+const SolidLogoutIcon = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 21H5a2 2 0 01-2-2V5a2 2 0 012-2h5v2H5v14h5v2z" />
+    <path d="M16 17l5-5-5-5v3H9v4h7v3z" />
+  </svg>
+);
 
 // -- DATOS DEL SISTEMA (FIJOS) --
 const SYSTEM_CATEGORIES = [
@@ -54,172 +159,9 @@ const M3U_EXTRACTED_GROUPS = [
 // Unión temporal para facilitar recuentos
 const STATIC_MOCK_CATEGORIES = [...SYSTEM_CATEGORIES, ...M3U_EXTRACTED_GROUPS];
 
-const STATIC_MOCK_CHANNELS = [
-  { id: 1, name: "HBO Premium HD", epg: "14:00 - Juego de Tronos", img: "https://api.dicebear.com/7.x/identicon/svg?seed=HBO&backgroundColor=4A00E0", groupId: 'us-uk' },
-  { id: 2, name: "ESPN 1 HD", epg: "15:30 - Champions League", img: "https://api.dicebear.com/7.x/identicon/svg?seed=ESPN&backgroundColor=c31432", groupId: 'latam-vip' },
-  { id: 3, name: "Fox Sports", epg: "Todo el día", img: "https://api.dicebear.com/7.x/identicon/svg?seed=Fox&backgroundColor=0f0c29", groupId: 'us-uk' },
-  { id: 4, name: "CNN Español", epg: "14:00 - Noticias Internacionales", img: "https://api.dicebear.com/7.x/identicon/svg?seed=CNN&backgroundColor=cb2d3e", groupId: 'latam-vip' },
-  { id: 5, name: "Disney Channel", epg: "16:00 - Toy Story 4", img: "https://api.dicebear.com/7.x/identicon/svg?seed=Disney&backgroundColor=1fa2ff", groupId: 'es-tv' },
-  { id: 6, name: "MTV Hits", epg: "Top 20 Billboard", img: "https://api.dicebear.com/7.x/identicon/svg?seed=MTV&backgroundColor=ff0844", groupId: 'us-uk' },
-  { id: 7, name: "Nat Geo Wild", epg: "18:00 - Planeta Tierra VIP", img: "https://api.dicebear.com/7.x/identicon/svg?seed=NatGeo&backgroundColor=f8b500", groupId: 'es-tv' },
-  { id: 8, name: "TNT Series", epg: "The Mentalist - T5 E12", img: "https://api.dicebear.com/7.x/identicon/svg?seed=TNT&backgroundColor=141e30", groupId: 'latam-vip' },
-];
-
-const STATIC_MOCK_MOVIES = [
-  { id: 101, title: "Duna: Parte Dos", imdb: 8.8, poster: "https://image.tmdb.org/t/p/w500/8b8R8l88Qje9dn9OE8PB05AWbUP.jpg", groupId: 'vod-es', director: "Denis Villeneuve", genre: "Ciencia Ficción, Aventura", cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson", synopsis: "Paul Atreides se une a Chani y a los Fremen mientras busca venganza contra los conspiradores que destruyeron a su familia.", duration: "166 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/8rpDcsfLJypbO6vtec005WdYQDE.jpg" },
-  { id: 102, title: "Oppenheimer", imdb: 8.4, poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", groupId: 'vod-en', director: "Christopher Nolan", genre: "Drama, Historia", cast: "Cillian Murphy, Emily Blunt, Matt Damon", synopsis: "La historia del científico estadounidense J. Robert Oppenheimer y su papel en el desarrollo de la bomba atómica.", duration: "180 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/rMvPXy8PUjj1oCGZqQdoeyZ3Sls.jpg" },
-  { id: 103, title: "Spider-Man: Across the Spider-Verse", imdb: 8.6, poster: "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg", groupId: 'vod-en', director: "Joaquim Dos Santos", genre: "Animación, Acción", cast: "Shameik Moore, Hailee Steinfeld, Oscar Isaac", synopsis: "Miles Morales es catapultado a través del Multiverso, donde se encuentra con un equipo de Spider-Personas encargadas de proteger su propia existencia.", duration: "140 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg" },
-  { id: 104, title: "Película Rota (Test Fallback)", imdb: 5.0, poster: "https://link-roto-que-no-existe.com/cover.jpg", groupId: 'vod-es', director: "Director Falso", genre: "Test", cast: "Actor 1", synopsis: "Película de prueba para ver qué pasa cuando la portada falla.", duration: "90 min", year: 2024, backdrop: "" },
-  { id: 105, title: "The Dark Knight", imdb: 9.0, poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", groupId: 'vod-en', director: "Christopher Nolan", genre: "Acción, Crimen, Drama", cast: "Christian Bale, Heath Ledger, Aaron Eckhart", synopsis: "Cuando la amenaza conocida como el Joker emerge de su pasado misterioso, causa estragos y caos en la gente de Gotham.", duration: "152 min", year: 2008, backdrop: "https://image.tmdb.org/t/p/original/dqK9Hag1054tghRQSqLSfrkvQnA.jpg" },
-  { id: 106, title: "Poor Things", imdb: 8.0, poster: "https://image.tmdb.org/t/p/w500/ckzIGvUhnT5NqF4K1a5hL91mR7u.jpg", groupId: 'vod-en', director: "Yorgos Lanthimos", genre: "Comedia, Fantasía", cast: "Emma Stone, Mark Ruffalo, Willem Dafoe", synopsis: "La increíble historia y la fantástica evolución de Bella Baxter, una joven devuelta a la vida por el brillante y poco ortodoxo científico Dr. Godwin Baxter.", duration: "141 min", year: 2023, backdrop: "https://image.tmdb.org/t/p/original/bQS43Zo51m8KDr1Gj6HqN3hI0R7.jpg" },
-  { id: 107, title: "Godzilla x Kong", imdb: 6.5, poster: "https://image.tmdb.org/t/p/w500/kDp1vUBnMpe8ak4rjgl3cLELqjU.jpg", groupId: 'vod-es', director: "Adam Wingard", genre: "Acción, Ciencia Ficción", cast: "Rebecca Hall, Brian Tyree Henry, Dan Stevens", synopsis: "Una aventura cinematográfica completamente nueva que enfrenta al todopoderoso Kong y al temible Godzilla contra una colosal amenaza no descubierta oculta dentro de nuestro mundo.", duration: "115 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg" },
-  { id: 108, title: "Kung Fu Panda 4", imdb: 7.1, poster: "https://image.tmdb.org/t/p/w500/kZ1hQ7c2d8290G5E2wN3AEM7H51.jpg", groupId: 'vod-es', director: "Mike Mitchell", genre: "Animación, Familia", cast: "Jack Black, Awkwafina, Viola Davis", synopsis: "Po debe entrenar a un nuevo Guerrero Dragón mientras se enfrenta a un nuevo villano capaz de convocar a villanos del pasado.", duration: "94 min", year: 2024, backdrop: "https://image.tmdb.org/t/p/original/kYgQzzjNis5jJalYtI62HapO1M2.jpg" }
-];
-
-const STATIC_MOCK_SERIES = [
-  { 
-    id: 201, 
-    title: "Breaking Bad", 
-    imdb: 9.5, 
-    poster: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizwpB.jpg", 
-    groupId: 'vod-es', 
-    director: "Vince Gilligan", 
-    genre: "Crimen, Drama", 
-    cast: "Bryan Cranston, Aaron Paul, Anna Gunn", 
-    synopsis: "Un profesor de química diagnosticado con cáncer de pulmón recurre a la fabricación y venta de metanfetamina para asegurar el futuro de su familia.",
-    year: 2008, 
-    backdrop: "https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '201-s1e1', epNumber: 1, title: "Piloto", duration: "58 min", image: "https://image.tmdb.org/t/p/w500/rXmB0vTIfx7Sj6KxZ4Hj4Yv1tQf.jpg", synopsis: "Walter White, un profesor de química, decide cocinar metanfetamina." },
-          { id: '201-s1e2', epNumber: 2, title: "El Gato está en la Bolsa...", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/qXzZ6C1P0Y1q2c2Ww6n8J2L6mU.jpg", synopsis: "Walt y Jesse intentan resolver un grave problema en la RV." }
-        ]
-      },
-      {
-        seasonNumber: 2,
-        episodes: [
-          { id: '201-s2e1', epNumber: 1, title: "Siete Treinta y Siete", duration: "47 min", image: "https://image.tmdb.org/t/p/w500/v9QY0YwQZgM8Z3xXl2Q3M8B2l2E.jpg", synopsis: "Walt y Jesse calculan el dinero exacto que necesitan." },
-          { id: '201-s2e2', epNumber: 2, title: "Rastreador", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/rMvPXy8PUjj1oCGZqQdoeyZ3Sls.jpg", synopsis: "Las cosas se salen de control con la llegada de Hank." }
-        ]
-      }
-    ]
-  },
-  { 
-    id: 202, 
-    title: "The Boys", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/2yC1x6yXQzXZyvP7R3C3h0E5c7x.jpg", 
-    groupId: 'vod-en', 
-    director: "Eric Kripke", 
-    genre: "Acción, Comedia", 
-    cast: "Karl Urban, Jack Quaid, Antony Starr", 
-    synopsis: "Un grupo de vigilantes se propone derribar a superhéroes corruptos corporativos que abusan de sus superpoderes.",
-    year: 2019, 
-    backdrop: "https://image.tmdb.org/t/p/original/mGVrXeIjw1eM196fC1yF6fJqM9P.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '202-s1e1', epNumber: 1, title: "The Name of the Game", duration: "60 min", image: "https://image.tmdb.org/t/p/w500/5m1k2n5M9jK9q9R9l6m3q8h1v5i.jpg", synopsis: "Hughie Campbell queda destrozado cuando su novia muere." },
-          { id: '202-s1e2', epNumber: 2, title: "Cherry", duration: "59 min", image: "https://image.tmdb.org/t/p/w500/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg", synopsis: "The Boys encuentran a su primer blanco de Vought." }
-        ]
-      }
-    ]
-  },
-  { 
-    id: 203, 
-    title: "Stranger Things", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/uOOtwVbSr4QDjAGIifLDvgP2cyS.jpg", 
-    groupId: 'vod-en', 
-    director: "The Duffer Brothers", 
-    genre: "Drama, Fantasía", 
-    cast: "Millie Bobby Brown, Finn Wolfhard, Winona Ryder", 
-    synopsis: "Un niño desaparece misteriosamente y sus amigos emprenden una búsqueda que desvela una serie de misterios ocultos en su pueblo.",
-    year: 2016, 
-    backdrop: "https://image.tmdb.org/t/p/original/56v2KjBlU4XaOv9rVYEQypROD7P.jpg",
-    seasons: [
-      {
-        seasonNumber: 1,
-        episodes: [
-          { id: '203-s1e1', epNumber: 1, title: "Capítulo Uno: La desaparición de Will Byers", duration: "48 min", image: "https://image.tmdb.org/t/p/w500/uOOtwVbSr4QDjAGIifLDvgP2cyS.jpg", synopsis: "De regreso a casa tras jugar con sus amigos, el joven Will Byers desaparece misteriosamente." }
-        ]
-      }
-    ]
-  },
-  { 
-    id: 204, 
-    title: "The Last of Us", 
-    imdb: 8.8, 
-    poster: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", 
-    groupId: 'vod-en', 
-    director: "Craig Mazin", 
-    genre: "Drama, Acción", 
-    cast: "Pedro Pascal, Bella Ramsey", 
-    synopsis: "Supervivientes viajan a través de un EE.UU. post-apocalíptico desolado por una infección fúngica.",
-    year: 2023, 
-    backdrop: "https://image.tmdb.org/t/p/original/aT3sRVqbpz2vEXomo5hI4tc5uAW.jpg",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '204-s1e1', epNumber: 1, title: "Cuando estés perdido en la oscuridad", duration: "80 min", image: "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", synopsis: "El inicio del brote." }] }]
-  },
-  { 
-    id: 205, 
-    title: "Peaky Blinders", 
-    imdb: 8.8, 
-    poster: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg", 
-    groupId: 'vod-en', 
-    director: "Steven Knight", 
-    genre: "Crimen, Drama", 
-    cast: "Cillian Murphy, Tom Hardy", 
-    synopsis: "Epopeya de una familia de gánsteres ambientada en Birmingham, Inglaterra, en 1919.",
-    year: 2013, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '205-s1e1', epNumber: 1, title: "Episodio 1", duration: "57 min", image: "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg", synopsis: "Tommy Shelby consigue una caja de armas." }] }]
-  },
-  { 
-    id: 206, 
-    title: "The Office", 
-    imdb: 9.0, 
-    poster: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", 
-    groupId: 'vod-en', 
-    director: "Greg Daniels", 
-    genre: "Comedia", 
-    cast: "Steve Carell, Rainn Wilson", 
-    synopsis: "Falsa documental sobre el día a día de los empleados de la sucursal de Scranton de la empresa de papel Dunder Mifflin.",
-    year: 2005, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '206-s1e1', epNumber: 1, title: "Piloto", duration: "22 min", image: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", synopsis: "Un documental que muestra el día a día en una oficina." }] }]
-  },
-  { 
-    id: 207, 
-    title: "Chernobyl", 
-    imdb: 9.3, 
-    poster: "https://image.tmdb.org/t/p/w500/hlL0k92HhEMq19A1EqGZinHIn2S.jpg", 
-    groupId: 'vod-en', 
-    director: "Craig Mazin", 
-    genre: "Drama, Historia", 
-    cast: "Jared Harris, Stellan Skarsgård", 
-    synopsis: "Dramatización del desastre nuclear de Chernóbil de 1986 y los esfuerzos de limpieza sin precedentes que le siguieron.",
-    year: 2019, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '207-s1e1', epNumber: 1, title: "1:23:45", duration: "59 min", image: "https://image.tmdb.org/t/p/w500/hlL0k92HhEMq19A1EqGZinHIn2S.jpg", synopsis: "Explosión en la planta de energía." }] }]
-  },
-  { 
-    id: 208, 
-    title: "Dark", 
-    imdb: 8.7, 
-    poster: "https://image.tmdb.org/t/p/w500/90oGfl2VwP6wrt82z2eC660xP22.jpg", 
-    groupId: 'vod-en', 
-    director: "Baran bo Odar", 
-    genre: "Drama, Misterio", 
-    cast: "Louis Hofmann, Karoline Eichhorn", 
-    synopsis: "Una saga familiar con un toque sobrenatural ambientada en una ciudad alemana donde la desaparición de dos niños expone fracturas familiares.",
-    year: 2017, 
-    backdrop: "",
-    seasons: [{ seasonNumber: 1, episodes: [{ id: '208-s1e1', epNumber: 1, title: "Secretos", duration: "51 min", image: "https://image.tmdb.org/t/p/w500/90oGfl2VwP6wrt82z2eC660xP22.jpg", synopsis: "La misteriosa desaparición de un joven revive trágicos eventos." }] }]
-  }
-];
+const STATIC_MOCK_CHANNELS = [];
+const STATIC_MOCK_MOVIES = [];
+const STATIC_MOCK_SERIES = [];
 
 const MOCK_SPORTS_AGENDA = [];
 
@@ -254,7 +196,8 @@ const translateToSpanish = async (text) => {
 
 const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }) => {
   const tr = translations[appLanguage] || translations.es;
-  const API_BASE_URL = 'https://thriptw.com';
+  const isWebSvc = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
+  const API_BASE_URL = isWebSvc ? window.location.origin : 'http://localhost:3001';
 
   const MOCK_CHANNELS = playlistData && playlistData.channels?.length > 0 ? playlistData.channels : STATIC_MOCK_CHANNELS;
   const MOCK_MOVIES = playlistData && playlistData.movies?.length > 0 ? playlistData.movies : STATIC_MOCK_MOVIES;
@@ -480,14 +423,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     // Si el menú se abre, deshabilitamos la navegación del resto de la página
     if (isDrawerOpen) {
-      if (window.SpatialNavigation) {
-        window.SpatialNavigation.disable('main');
-        window.SpatialNavigation.focus('drawer');
-      }
     } else {
-      if (window.SpatialNavigation) {
-        window.SpatialNavigation.enable('main');
-      }
     }
 
     const handleNavigateFailed = (e) => {
@@ -526,6 +462,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   // GESTION DE MULTIPLES LISTAS
   const [savedLists, setSavedLists] = useState([]);
   const [isEditListOpen, setIsEditListOpen] = useState(false);
+  const [editingListId, setEditingListId] = useState(null);
   const [newListUrl, setNewListUrl] = useState('');
   const [newListUser, setNewListUser] = useState('');
   const [newListPass, setNewListPass] = useState('');
@@ -533,15 +470,20 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   useEffect(() => {
     try {
       let stored = JSON.parse(localStorage.getItem('thriptw_saved_lists') || '[]');
+
       const currentUrl = localStorage.getItem('thriptw_xtUrl');
       const currentUser = localStorage.getItem('thriptw_xtUser');
       const currentPass = localStorage.getItem('thriptw_xtPass');
       
       if (currentUrl && currentUser && currentPass) {
-        const exists = stored.find(l => l.url === currentUrl && l.user === currentUser);
-        if (!exists) {
-           const currentList = { url: currentUrl, user: currentUser, pass: currentPass, name: currentUser };
-           stored.push(currentList);
+        let existing = stored.find(l => l.url === currentUrl && l.user === currentUser);
+        const currentExp = playlistData?.account_info?.exp_date;
+        
+        if (!existing) {
+           stored.push({ url: currentUrl, user: currentUser, pass: currentPass, name: currentUser, exp_date: currentExp });
+           localStorage.setItem('thriptw_saved_lists', JSON.stringify(stored));
+        } else if (currentExp && existing.exp_date !== currentExp) {
+           existing.exp_date = currentExp;
            localStorage.setItem('thriptw_saved_lists', JSON.stringify(stored));
         }
       }
@@ -573,6 +515,31 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
     setSavedLists(updated);
     localStorage.setItem('thriptw_saved_lists', JSON.stringify(updated));
   };
+
+  const handleRenameList = (list, newName) => {
+    if (!newName || newName.trim() === '') return;
+    const updated = savedLists.map(l => 
+      (l.url === list.url && l.user === list.user) ? { ...l, name: newName } : l
+    );
+    setSavedLists(updated);
+    localStorage.setItem('thriptw_saved_lists', JSON.stringify(updated));
+  };
+
+  // Sincronizar fecha de caducidad de la lista activa con su entrada en la lista guardada
+  useEffect(() => {
+    if (playlistData?.account_info?.exp_date && savedLists.length > 0) {
+      const activeUrl = localStorage.getItem('thriptw_xtUrl');
+      const activeUser = localStorage.getItem('thriptw_xtUser');
+      
+      const listIdx = savedLists.findIndex(l => l.url === activeUrl && l.user === activeUser);
+      if (listIdx !== -1 && savedLists[listIdx].exp_date !== playlistData.account_info.exp_date) {
+        const updated = [...savedLists];
+        updated[listIdx] = { ...updated[listIdx], exp_date: playlistData.account_info.exp_date };
+        setSavedLists(updated);
+        localStorage.setItem('thriptw_saved_lists', JSON.stringify(updated));
+      }
+    }
+  }, [playlistData, savedLists]);
 
   useEffect(() => {
     if (!isPremium) {
@@ -654,25 +621,6 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
   };
 
   // CÁLCULO DINÁMICO DE DATOS (A nivel general)
-  const categoriesWithCounts = MOCK_CATEGORIES.map(cat => {
-    if (cat.id === 'fav') return { ...cat, count: favorites.length };
-    if (cat.id === 'hist') return { ...cat, count: history.length };
-    
-    if (cat.id === 'all') {
-       const allCount = activeBottomNav === 'movies' ? MOCK_MOVIES.length : activeBottomNav === 'series' ? MOCK_SERIES.length : MOCK_CHANNELS.length;
-       return { ...cat, count: allCount };
-    }
-
-    // Contar según el active context
-    let specificCount = 0;
-    if (activeBottomNav === 'movies') {
-       specificCount = MOCK_MOVIES.filter(m => m.groupId === cat.id).length;
-    } else if (activeBottomNav === 'series') {
-       specificCount = MOCK_SERIES.filter(s => s.groupId === cat.id).length;
-    } else {
-       specificCount = MOCK_CHANNELS.filter(c => c.groupId === cat.id).length;
-    }
-
     return { ...cat, count: specificCount };
   });
 
@@ -774,44 +722,89 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
         {/* BANNER DE PAGO ESTILO AJUSTES/MODAL */}
         <div className="qr-modal-card telegram-modal fade-in-up" style={{ position: 'relative', transform: 'none', top: 'auto', left: 'auto', margin: '0 20px', maxWidth: '600px', width: 'calc(100% - 40px)', padding: '30px' }}>
-          <p style={{ textAlign: 'center', color: '#ccc', marginBottom: '30px', fontSize: '15px', lineHeight: '1.5' }}>Tu periodo de prueba de 7 días ha expirado. Por favor, adquiere la Licencia Premium para continuar disfrutando de la aplicación.</p>
+          <div className="device-id-badge" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginBottom: '15px',
+            width: 'fit-content',
+            margin: '0 auto 15px auto'
+          }}>
+            <span style={{ fontSize: '16px', color: 'white', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MAC:</span>
+            <span style={{ fontSize: '20px', color: '#f1c40f', fontWeight: '900', fontFamily: 'monospace', letterSpacing: '1px' }}>
+              {localStorage.getItem('thriptw_device_id')?.replace(/;/g, ':') || '00:00:00:00:00:00'}
+            </span>
+          </div>
+        <p className="qr-subtitle" style={{ fontSize: '17px', color: '#ccc', marginBottom: '20px', fontWeight: '500', marginTop: 0, maxWidth: '80%', margin: '0 auto 20px', textAlign: 'center' }}>
+          Compra una licencia de 12 meses para continuar disfrutando de la aplicación.
+        </p>
           
-          <div className="telegram-steps-container">
-            <div className="telegram-step">
-              <div className="telegram-step-header">
-                <div className="telegram-step-number">1</div>
-                <h4>{tr.payment?.step1 || 'Transfiere 4.95 €'}</h4>
+          <div className="telegram-steps-container" style={{ width: '100%', maxWidth: '600px', marginTop: '10px' }}>
+            {/* PASOS 1 & 2 COMBINADOS VERTICALMENTE */}
+            <div className="telegram-step" style={{ display: 'flex', flexDirection: 'column', gap: '5px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', alignItems: 'center' }}>
+              {/* PAYPAL */}
+              <div className="qr-item-vertical" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '25px' }}>
+                  <div className="telegram-step-number">1</div>
+                  <h4 style={{ color: '#fff', margin: 0, fontSize: '15px' }}>{tr.payment?.step1 || 'Pagar 6,95 €'}</h4>
+                </div>
+                <div style={{ background: '#fff', padding: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '12px', width: '160px', height: '160px', marginTop: '-10px' }}>
+                  <img 
+                    src="./QR.png" 
+                    alt="PayPal QR" 
+                    onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thriptw/6.95EUR"}
+                    style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }} 
+                  />
+                </div>
+                <p style={{ color: '#0088cc', fontSize: '15px', fontWeight: 'bold', margin: 0 }}>Paypal: @thriptw</p>
               </div>
-              <div className="qr-image-wrapper telegram-qr-wrapper">
-                <img loading="lazy" decoding="async" src="/QR.png" alt="Código QR @thriptw" className="qr-image" 
-                  onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thrip/4.95EUR"} />
+
+              {/* DIVIDER */}
+              <div style={{ width: '80%', height: '1px', background: 'rgba(255,255,255,0.05)', margin: '5px 0' }}></div>
+
+              {/* TELEGRAM */}
+              <div className="qr-item-vertical" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '25px' }}>
+                  <div className="telegram-step-number">2</div>
+                  <h4 style={{ color: '#fff', margin: 0, fontSize: '15px' }}>{tr.payment?.step2 || 'Enviar Recibo'}</h4>
+                </div>
+                <div style={{ background: '#fff', padding: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '12px', width: '160px', height: '160px', marginTop: '-10px' }}>
+                  <img 
+                    src="./qr telegram.png" 
+                    alt="Telegram QR" 
+                    onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://t.me/thriptw"}
+                    style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }} 
+                  />
+                </div>
+                <p style={{ color: '#0088cc', fontSize: '15px', fontWeight: 'bold', margin: 0 }}>Telegram: @thriptw</p>
               </div>
             </div>
-            <div className="telegram-step">
-              <div className="telegram-step-header">
-                <div className="telegram-step-number">2</div>
-                <h4>{tr.payment?.step2 || 'Avisar al Administrador'}</h4>
-              </div>
-              <button className="btn-telegram-action" onClick={() => window.open('https://t.me/thriptw', '_blank')}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.198 2.027c-1.004-.326-2.008-.326-3.013 0L3.125 7.575C1.65 8.12 1.65 9.754 3.125 10.3l4.316 1.6v5.8c0 1.09.89 1.98 1.98 1.98h.02c1.09 0 1.98-.89 1.98-1.98v-3.513l5.093 3.395c.78.52 1.83.213 2.152-.64l3.528-11.64c.265-.873-.13-1.803-.996-2.068z"/></svg> 
-                {tr.payment?.btnTelegram || 'Enviar Recibo por Telegram'}
-              </button>
-            </div>
-            <div className="telegram-step">
-              <div className="telegram-step-header">
+
+            {/* PASO 3: PIN ENTRY */}
+            <div className="telegram-step" style={{ width: '100%', marginTop: '10px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '12px', border: '1px solid var(--primary-red)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <div className="telegram-step-number">3</div>
-                <h4>{tr.payment?.step3 || 'Código de 12 dígitos'}</h4>
+                <h4 style={{ color: '#fff', fontSize: '16px', margin: 0 }}>{tr.payment?.step3 || 'Ingresa PIN activación'}</h4>
               </div>
-              <div className="telegram-input-group">
+              <div className="telegram-input-group" style={{ display: 'flex', gap: '10px' }}>
                 <input 
+                  id="sn-pin-input-expired-coll"
+                  className="focusable"
                   type="text" 
-                  placeholder={tr.payment?.codePlaceholder || 'Ingresa tu Pin'}
+                  placeholder={tr.payment?.codePlaceholder || "Escribe el PIN..."}
                   value={activationCode}
                   onChange={(e) => setActivationCode(e.target.value.toUpperCase())}
                   maxLength={14}
+                  style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', fontSize: '18px', textAlign: 'center', fontFamily: 'monospace', letterSpacing: '2px' }}
                 />
-                <button className="btn-paypal btn-redeem" onClick={handleConfirmPayment} disabled={isVerifying || activationCode.length < 12}>
-                  <Key size={18} /> {isVerifying ? (tr.payment?.verifying || 'Validando...') : (tr.payment?.confirmPayment || 'Canjear')}
+                <button 
+                  id="sn-confirm-pin-expired-coll"
+                  className="btn-redeem focusable"
+                  onClick={handleConfirmPayment}
+                  disabled={activationCode.length < 12}
+                  style={{ background: '#ff0000', color: 'white', border: 'none', borderRadius: '8px', padding: '0 20px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  {tr.payment?.confirmPayment || 'Activar'}
                 </button>
               </div>
             </div>
@@ -883,7 +876,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               return (
                 <div 
                   key={cat.id} 
-                  className={`menu-item focusable ${activeCategory === cat.id ? 'active' : ''}`}
+                  className={`menu-item ${activeCategory === cat.id ? 'active' : ''}`}
                   onClick={() => {
                     setActiveCategory(cat.id);
                     setIsDrawerOpen(false);
@@ -909,7 +902,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               return (
                 <div 
                   key={cat.id} 
-                  className={`menu-item focusable ${activeCategory === cat.id ? 'active' : ''}`}
+                  className={`menu-item ${activeCategory === cat.id ? 'active' : ''}`}
                   onClick={() => {
                     setActiveCategory(cat.id);
                     setIsDrawerOpen(false);
@@ -974,7 +967,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       }
                       
                       return (
-                        <div key={match.id} className="sports-match-row manual-sports-card focusable" onClick={() => setSelectedMatchId(match.id)} style={{ position: 'relative', overflow: 'hidden', minHeight: '65px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', padding: '10px 20px', marginBottom: '8px' }}>
+                        <div key={match.id} className="sports-match-row manual-sports-card" onClick={() => setSelectedMatchId(match.id)} style={{ position: 'relative', overflow: 'hidden', minHeight: '65px', width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', padding: '10px 20px', marginBottom: '8px' }}>
                           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: `linear-gradient(to right, rgba(20,20,20,0.95), rgba(10,10,10,0.98))`, zIndex: 0 }} className="sports-bg-layer"></div>
                           
                           {/* Flujo Unificado a la Izquierda (Tren Tabular) */}
@@ -1003,7 +996,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                           </div>
 
                           <div className="match-action-col" style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minWidth: '100px' }}>
-                            <button className="premium-btn focusable" onClick={(e) => { e.stopPropagation(); setSelectedMatchId(match.id); }} style={{ background: 'var(--primary-red)', padding: '8px 24px', fontSize: '13px', fontWeight: 'bold', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(217, 30, 24, 0.4)', marginTop: '4px' }}>
+                            <button className="premium-btn" onClick={(e) => { e.stopPropagation(); setSelectedMatchId(match.id); }} style={{ background: 'var(--primary-red)', padding: '8px 24px', fontSize: '13px', fontWeight: 'bold', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(217, 30, 24, 0.4)', marginTop: '4px' }}>
                                 + INFO
                             </button>
                           </div>
@@ -1027,7 +1020,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   </button>
                 </div>
                 
-                <button className="carousel-nav-btn left fade-in focusable" onClick={() => scrollRef(homeMoviesRef, -600)}>
+                <button className="carousel-nav-btn left fade-in" onClick={() => scrollRef(homeMoviesRef, -600)}>
                   <ChevronLeft size={32} />
                 </button>
 
@@ -1041,7 +1034,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                     return (
                       <div 
                         key={`${movie.id}-${idx}`} 
-                        className="movie-poster-card focusable" 
+                        className="movie-poster-card" 
                         style={{ flexShrink: 0, width: '220px', height: '330px' }}
                         onClick={() => setSelectedMovieId(movie.id)}
                       >
@@ -1103,7 +1096,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   })}
                 </div>
 
-                <button className="carousel-nav-btn right fade-in focusable" onClick={() => scrollRef(homeMoviesRef, 600)}>
+                <button className="carousel-nav-btn right fade-in" onClick={() => scrollRef(homeMoviesRef, 600)}>
                   <ChevronRight size={32} />
                 </button>
               </div>
@@ -1121,7 +1114,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   </button>
                 </div>
                 
-                <button className="carousel-nav-btn left fade-in focusable" onClick={() => scrollRef(homeSeriesRef, -600)}>
+                <button className="carousel-nav-btn left fade-in" onClick={() => scrollRef(homeSeriesRef, -600)}>
                   <ChevronLeft size={32} />
                 </button>
 
@@ -1135,7 +1128,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                     return (
                       <div 
                         key={`${series.id}-${idx}`} 
-                        className="movie-poster-card focusable" 
+                        className="movie-poster-card" 
                         style={{ flexShrink: 0, width: '220px', height: '330px' }}
                         onClick={() => setSelectedSeriesId(series.id)}
                       >
@@ -1208,7 +1201,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                   })}
                 </div>
 
-                <button className="carousel-nav-btn right fade-in focusable" onClick={() => scrollRef(homeSeriesRef, 600)}>
+                <button className="carousel-nav-btn right fade-in" onClick={() => scrollRef(homeSeriesRef, 600)}>
                   <ChevronRight size={32} />
                 </button>
               </div>
@@ -1227,7 +1220,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               return (
                 <div className="movie-detail-wrapper" style={{ marginLeft: 0 }}>
                   <div className="movie-detail-content scroll-area" style={{ maxWidth: '100%', padding: '40px' }}>
-                    <button className="btn-back focusable" onClick={() => setSelectedMatchId(null)}>
+                    <button className="btn-back" onClick={() => setSelectedMatchId(null)}>
                       <ArrowLeft size={24} /> {tr.common.back}
                     </button>
 
@@ -1257,7 +1250,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                             return (
                               <div 
                                 key={`panel-ch-${idx}`} 
-                                className="channel-card focusable" 
+                                className="channel-card" 
                                 style={{ cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)' }}
                                 onClick={() => {
                                   setSelectedMatchId(null);
@@ -1301,7 +1294,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               {displayedChannels.map(channel => {
                 const isFav = favorites.includes(channel.id);
                 return (
-                  <div key={channel.id} className="channel-card focusable" onClick={() => handleItemClick(channel.id)}>
+                  <div key={channel.id} className="channel-card" onClick={() => handleItemClick(channel.id)}>
                     <div className="channel-logo-box">
                       <img loading="lazy" decoding="async" 
                         src={channel.img} 
@@ -1344,7 +1337,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               return (
                 <div className="movie-detail-wrapper">
                   <div className="movie-detail-content scroll-area">
-                    <button className="btn-back focusable" onClick={() => setSelectedMovieId(null)} style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 16px', borderRadius: '24px', display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '35px', cursor: 'pointer', outline: 'none' }}>
+                    <button className="btn-back" onClick={() => setSelectedMovieId(null)} style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 16px', borderRadius: '24px', display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '35px', cursor: 'pointer', outline: 'none' }}>
                       <ArrowLeft size={16} /> Volver
                     </button>
 
@@ -1403,7 +1396,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                         </table>
 
                         <div className="movie-detail-actions">
-                          <button className="btn-play-movie focusable" onClick={() => setPlayingMedia(movie)} style={{ background: '#cc0000', color: '#fff', border: 'none', padding: '12px 26px', borderRadius: '30px', fontSize: '16px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                          <button className="btn-play-movie" onClick={() => setPlayingMedia(movie)} style={{ background: '#cc0000', color: '#fff', border: 'none', padding: '12px 26px', borderRadius: '30px', fontSize: '16px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
                             <Play size={20} fill="currentColor" /> Reproducir
                           </button>
                         </div>
@@ -1414,7 +1407,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '20px', fontWeight: 'bold' }}>Películas parecidas:</h3>
                       <div className="similar-movies-row scroll-area-x" style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '20px' }}>
                         {MOCK_MOVIES.filter(m => m.groupId === movie.groupId && m.id !== movie.id).slice(0, 20).map(similar => (
-                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { e.stopPropagation(); setSelectedMovieId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
+                          <div key={similar.id} className="similar-movie-card" onClick={(e) => { e.stopPropagation(); setSelectedMovieId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
                             <img loading="lazy" decoding="async" src={fixedPosters[similar.id] || similar.poster} alt={similar.title} style={{ width: '100%', height: '210px', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }} onError={(e) => { e.target.src = 'https://placehold.co/300x450/101010/FFF.png?text=Sin+Portada'; }} />
                             <p style={{ color: '#fff', fontSize: '13px', marginTop: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '600', textAlign: 'center', margin: 0 }}>
                               {cleanTitle(similar.title)}
@@ -1437,11 +1430,11 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
 
             {/* Píldoras de Filtros Rápido de Género */}
-            <div className="genre-pills-container" style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+            <div className="genre-pills-container" style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '15px' }}>
               {[tr.common.all, tr.common.action, tr.common.drama, tr.common.comedy, tr.common.crime, tr.common.romance, tr.common.terror].map(genre => (
                 <button 
                   key={genre} 
-                  className={`genre-pill focusable ${activeGenre === genre ? 'active' : ''}`}
+                  className={`genre-pill ${activeGenre === genre ? 'active' : ''}`}
                   onClick={() => setActiveGenre(genre)}
                 >
                   {genre}
@@ -1453,7 +1446,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               
               {displayedMovies.length === 0 && (
                 <div style={{ color: 'gray', textAlign: 'center', marginTop: '40px', gridColumn: '1 / -1' }}>
-                  {tr.common.notFound}
+                  {tr.common.notFound || "No se encontraron resultados."}
                 </div>
               )}
 
@@ -1462,7 +1455,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                 const currentPoster = fixedPosters[movie.id] || movie.poster;
                 const isFetchingIMDB = activeSearchIMDB[movie.id];
                 return (
-                  <div key={movie.id} className="movie-poster-card focusable" onClick={() => handleItemClick(movie.id)}>
+                  <div key={movie.id} className="movie-poster-card" onClick={() => handleItemClick(movie.id)}>
                     
                     <div className="movie-poster-wrapper" style={{ position: 'relative' }}>
                       <button 
@@ -1549,7 +1542,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               return (
                 <div className="movie-detail-wrapper">
                   <div className="movie-detail-content scroll-area">
-                    <button className="btn-back focusable" onClick={() => setSelectedSeriesId(null)} style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 16px', borderRadius: '24px', display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '35px', cursor: 'pointer', outline: 'none' }}>
+                    <button className="btn-back" onClick={() => setSelectedSeriesId(null)} style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.08)', padding: '8px 16px', borderRadius: '24px', display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '14px', fontWeight: 'bold', marginBottom: '35px', cursor: 'pointer', outline: 'none' }}>
                       <ArrowLeft size={16} /> Volver
                     </button>
 
@@ -1610,7 +1603,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                     <div className="series-seasons-section">
                       <div className="seasons-selector-container fade-in-up" style={{ marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '15px' }}>
                         <select 
-                          className="season-select focusable"
+                          className="season-select"
                           value={activeSeason}
                           onChange={(e) => setActiveSeason(Number(e.target.value))}
                           style={{
@@ -1643,7 +1636,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
                       <div className="episodes-list fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {currentSeason.episodes.map(ep => (
-                          <div key={ep.id} className="episode-card-text-only focusable" onClick={() => setPlayingMedia({ ...ep, parentTitle: series.title })}>
+                          <div key={ep.id} className="episode-card-text-only" onClick={() => setPlayingMedia({ ...ep, parentTitle: series.title })}>
                             <div className="episode-text-info">
                               <h4 className="episode-text-title">S{String(currentSeason.seasonNumber).padStart(2, '0')}E{String(ep.epNumber).padStart(2, '0')}</h4>
                               <span className="episode-text-duration">{ep.duration || ''}</span>
@@ -1660,7 +1653,7 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
                       <h3 style={{ color: '#fff', fontSize: '20px', marginBottom: '20px', fontWeight: 'bold' }}>Series parecidas:</h3>
                       <div className="similar-movies-row scroll-area-x" style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '20px' }}>
                         {MOCK_SERIES.filter(s => s.groupId === series.groupId && s.id !== series.id).slice(0, 20).map(similar => (
-                          <div key={similar.id} className="similar-movie-card focusable" onClick={(e) => { e.stopPropagation(); setSelectedSeriesId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
+                          <div key={similar.id} className="similar-movie-card" onClick={(e) => { e.stopPropagation(); setSelectedSeriesId(similar.id); }} style={{ width: '140px', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}>
                             <img loading="lazy" decoding="async" src={fixedPosters[similar.id] || similar.poster} alt={similar.title} style={{ width: '100%', height: '210px', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }} onError={(e) => { e.target.src = 'https://placehold.co/300x450/101010/FFF.png?text=Sin+Portada'; }} />
                             <p style={{ color: '#fff', fontSize: '13px', marginTop: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '600', textAlign: 'center', margin: 0 }}>
                               {cleanTitle(similar.title)}
@@ -1742,21 +1735,57 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               <div className="settings-card-header">
                 <Shield size={24} color="#f1c40f" />
                 <div className="settings-card-title-group">
-                  <h3 style={{ color: '#f1c40f' }}>{tr.payment?.title || 'Licencia Premium (1 Año)'}</h3>
+                  <h3 style={{ color: '#f1c40f' }}>{tr.payment?.title || 'Licencia Premium (1 Año)'}:</h3>
                   <p>{tr.payment?.desc || 'Acceso total 1 año y máxima calidad.'}</p>
+                  {!isPremium && !isTrialExpired && (
+                    <div className="trial-badge" style={{ 
+                      background: 'rgba(241, 196, 15, 0.15)', 
+                      color: '#f1c40f', 
+                      padding: '4px 10px', 
+                      borderRadius: '6px', 
+                      fontSize: '13px', 
+                      fontWeight: '800', 
+                      marginTop: '10px', 
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      border: '1px solid rgba(241, 196, 15, 0.2)',
+                      textTransform: 'uppercase'
+                    }}>
+                      <Timer size={14} />
+                      {tr.settings.freeTrial}: {trialDaysLeft} {trialDaysLeft === 1 ? 'día' : 'días'}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {!isPremium ? (
                 <div className="payment-action-box fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 0' }}>
-                  <button className="btn-play-movie" onClick={handlePayPalPayment} disabled={isVerifying} style={{ width: '100%', maxWidth: '300px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', padding: '0 16px', letterSpacing: '1px', borderRadius: '12px' }}>
+                  <button id="sn-license-coll" className="btn-play-movie focusable" onClick={handlePayPalPayment} disabled={isVerifying} style={{ width: '350px', maxWidth: '350px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', padding: '0 16px', letterSpacing: '1px', borderRadius: '12px' }}>
                     <span style={{ fontWeight: '900', fontSize: '26px' }}>4,95 €</span>
                   </button>
                 </div>
               ) : (
-                <div className="payment-success-box bounce-in" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', padding: '16px', background: 'rgba(46, 204, 113, 0.1)', borderRadius: '8px', border: '1px solid rgba(46, 204, 113, 0.3)' }}>
-                  <div className="status-dot green" style={{ width: 14, height: 14 }}></div>
-                  <h4 style={{ color: '#2ecc71', fontSize: '18px', margin: 0 }}>{tr.payment?.success || '¡Licencia Activada con éxito!'}</h4>
+                <div className="payment-success-box bounce-in" style={{ 
+                  width: '350px', 
+                  maxWidth: '350px', 
+                  height: '60px', 
+                  background: '#27ae60', 
+                  borderRadius: '12px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '12px', 
+                  color: '#fff', 
+                  fontSize: '18px', 
+                  fontWeight: '900', 
+                  margin: '20px auto 0 auto',
+                  boxShadow: '0 4px 15px rgba(39, 174, 96, 0.4)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}>
+                  <ThumbsUp size={22} color="#fff" />
+                  <span>Licencia activada</span>
                 </div>
               )}
             </div>
@@ -1766,62 +1795,130 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               <div className="settings-card-header">
                 <Tv size={24} color="var(--primary-red)" />
                 <div className="settings-card-title-group" style={{ flex: 1 }}>
-                  <h3>{tr.settings.iptwLists}</h3>
+                  <h3>{tr.settings.iptwLists}:</h3>
                   <p>{tr.settings.iptwListsSub}</p>
                 </div>
               </div>
 
               {/* CARD DE LA SUSCRIPCIÓN / LISTA ACTIVA */}
               <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', color: 'var(--primary-red, #e74c3c)', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '2px' }}>
-                  {tr.settings.activeList}
-                </h4>
-                <p style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#fff' }}>
-                  {tr.settings.listUser} {localStorage.getItem('thriptw_xtUser') || 'Modo Archivo'}
+                <p style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  {(() => {
+                    const activeUrl = localStorage.getItem('thriptw_xtUrl');
+                    const activeUser = localStorage.getItem('thriptw_xtUser');
+                    const saved = savedLists.find(l => l.url === activeUrl && l.user === activeUser);
+                    
+                    const displayName = saved?.name || activeUser || 'Usuario Activo';
+                    const rawExp = playlistData?.account_info?.exp_date || saved?.exp_date;
+                    
+                    return (
+                      <>
+                        {rawExp && rawExp !== "null" && rawExp !== "0" && (
+                          <span style={{ fontSize: '13px', color: '#f1c40f', background: 'rgba(241, 196, 15, 0.1)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+                            {new Date(parseInt(rawExp) * 1000).toLocaleDateString()}
+                          </span>
+                        )}
+                        <span>{tr.settings.listUser} {displayName}</span>
+                      </>
+                    );
+                  })()}
                 </p>
-                {playlistData?.account_info?.exp_date && (
-                  <p style={{ margin: 0, fontSize: '13px', color: '#f1c40f' }}>
-                    {tr.settings.listExpires} {new Date(playlistData.account_info.exp_date * 1000).toLocaleDateString()}
-                  </p>
-                )}
               </div>
               
               {/* BOTON GESTOR MULTI-LISTAS */}
               <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                <button className="btn-play-movie" onClick={() => setIsEditListOpen(!isEditListOpen)} style={{ width: '100%', maxWidth: '300px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', padding: '0 16px', letterSpacing: '1px', borderRadius: '12px' }}>
-                  {isEditListOpen ? tr.settings.closeManager : tr.settings.editLists}
+                <button className="btn-play-movie focusable" onClick={() => setIsEditListOpen(!isEditListOpen)} style={{ 
+                  width: '100%', 
+                  maxWidth: '300px', 
+                  height: '60px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontSize: '18px', 
+                  padding: '0 16px', 
+                  letterSpacing: '1px', 
+                  borderRadius: '12px', 
+                  marginTop: '16px',
+                  background: 'var(--primary-red, #e50914)',
+                  color: '#fff',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  transition: 'transform 0.2s, opacity 0.2s'
+                }}>
+                  {isEditListOpen ? tr.settings.closeManager : "EDITAR LISTAS"}
                 </button>
               </div>
 
               {isEditListOpen && (
                 <div style={{ marginTop: '16px', background: '#0a0a0a', border: '1px solid #1f1f1f', borderRadius: '12px', padding: '16px' }} className="fade-in-up">
-                   <h4 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#fff' }}>{tr.settings.savedLists}</h4>
+                   <h4 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#fff' }}>{tr.settings.savedLists}:</h4>
                    {savedLists.length === 0 && <p style={{ color: '#888', fontSize: '13px' }}>{tr.settings.noSavedLists}</p>}
-                   {savedLists.map((list, idx) => (
-                      <div key={idx} onClick={() => handleActivateList(list)} title={tr.common.action} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#111', padding: '8px 12px', borderRadius: '8px', marginBottom: '8px', border: '1px solid #222', cursor: 'pointer', transition: 'border 0.2s' }}>
-                         <div>
-                           <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#fff' }}>{list.name}</div>
-                         </div>
-                         <button onClick={(e) => { e.stopPropagation(); handleDeleteList(list); }} style={{ background: 'transparent', border: '1px solid #ff4d4d', color: '#ff4d4d', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
-                           {tr.settings.deleteList}
-                         </button>
-                      </div>
-                   ))}
+                   {savedLists.map((list, idx) => {
+                       const listId = `${list.url}-${list.user}`;
+                       const isEditing = editingListId === listId;
+                       
+                       return (
+                        <div key={idx} title={tr.common.action} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#111', padding: '8px 12px', borderRadius: '8px', marginBottom: '8px', border: isEditing ? '1px solid var(--primary-red)' : '1px solid #222', cursor: 'default', transition: 'border 0.2s' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }} onClick={(e) => e.stopPropagation()}>
+                              <div className="focusable" id={`sn-edit-coll-${idx}`} data-sn-right={`#sn-add-coll-${idx}`}>
+                                <Pencil 
+                                  size={16} 
+                                  style={{ color: isEditing ? 'var(--primary-red)' : '#888', cursor: 'pointer' }} 
+                                  onClick={() => setEditingListId(isEditing ? null : listId)} 
+                                />
+                              </div>
+                             {isEditing ? (
+                               <input 
+                                 autoFocus
+                                 type="text"
+                                 defaultValue={list.name}
+                                 onBlur={(e) => {
+                                   handleRenameList(list, e.target.value);
+                                   setEditingListId(null);
+                                 }}
+                                 onKeyDown={(e) => {
+                                   if (e.key === 'Enter') {
+                                     handleRenameList(list, e.target.value);
+                                     setEditingListId(null);
+                                   }
+                                 }}
+                                 style={{ background: '#000', border: '1px solid #333', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '14px', width: '100%' }}
+                               />
+                             ) : (
+                               <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#fff' }}>{list.name}</div>
+                             )}
+                           </div>
+                           {list.exp_date && (
+                             <div style={{ fontSize: '12px', color: '#f1c40f', background: 'rgba(241, 196, 15, 0.1)', padding: '4px 8px', borderRadius: '4px', whiteSpace: 'nowrap', fontWeight: 'bold' }}>
+                               {new Date(list.exp_date * 1000).toLocaleDateString()}
+                             </div>
+                           )}
+                            <button 
+                                id={`sn-add-coll-${idx}`}
+                                onClick={(e) => { e.stopPropagation(); handleActivateList(list); }} 
+                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold', marginRight: '10px', textTransform: 'uppercase' }} 
+                                className="focusable"
+                                data-sn-left={`#sn-edit-coll-${idx}`}
+                                data-sn-right={`#sn-delete-coll-${idx}`}
+                              >
+                                AGREGAR
+                            </button>
+                            <button 
+                                id={`sn-delete-coll-${idx}`}
+                                onClick={(e) => { e.stopPropagation(); handleDeleteList(list); }} 
+                                style={{ background: 'transparent', border: 'none', color: '#ff4d4d', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '10px' }} 
+                                className="focusable"
+                                data-sn-left={`#sn-add-coll-${idx}`}
+                              >
+                              <Trash2 size={18} />
+                           </button>
+                        </div>
+                       );
+                    })}
 
-                   <div style={{ marginTop: '20px', borderTop: '1px solid #222', paddingTop: '16px' }}>
-                      <h4 style={{ margin: '0 0 15px 0', fontSize: '14px', color: '#aaa' }}>{tr.settings.addNewList}</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <input type="text" placeholder={tr.settings.serverUrlPlaceholder2} value={newListUrl} onChange={(e) => setNewListUrl(e.target.value)} style={{ padding: '12px', background: '#111', border: '1px solid #222', color: '#fff', borderRadius: '6px', fontSize: '14px' }} />
-                        <input type="text" placeholder={tr.settings.usernamePlaceholder2} value={newListUser} onChange={(e) => setNewListUser(e.target.value)} style={{ padding: '12px', background: '#111', border: '1px solid #222', color: '#fff', borderRadius: '6px', fontSize: '14px' }} />
-                        <input type="password" placeholder={tr.settings.passwordPlaceholder2} value={newListPass} onChange={(e) => setNewListPass(e.target.value)} style={{ padding: '12px', background: '#111', border: '1px solid #222', color: '#fff', borderRadius: '6px', fontSize: '14px' }} />
-                        <button onClick={handleAddList} style={{ background: 'var(--primary-red)', border: 'none', color: '#fff', padding: '12px', borderRadius: '6px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}>
-                          {tr.settings.saveList}
-                        </button>
-                      </div>
-                   </div>
+
                 </div>
               )}
-
             </div>
 
             {/* SECCIÓN 3: Configuración IPTW */}
@@ -1829,27 +1926,65 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               <div className="settings-card-header">
                 <Settings size={24} color="var(--primary-red)" />
                 <div className="settings-card-title-group">
-                  <h3>{tr.settings.iptwConfig}</h3>
+                  <h3>{tr.settings.iptwConfig}:</h3>
                   <p>{tr.settings.iptwConfigSub}</p>
                 </div>
               </div>
 
               <div className="settings-form-row">
                 <label>{tr.settings.bufferSize}</label>
-                <select className="settings-select focusable" defaultValue="medio">
-                  <option value="medio">{tr.settings.bufferDesc}</option>
-                  <option value="grande">{tr.settings.bufferBig}</option>
-                  <option value="pequeno">{tr.settings.bufferSmall}</option>
-                </select>
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <button 
+                    className="settings-select focusable"
+                    onClick={() => setActiveDropdown(activeDropdown === 'buffer' ? null : 'buffer')}
+                    style={{ textAlign: 'left', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <span>{bufferSize === 'medio' ? tr.settings.bufferDesc : bufferSize === 'grande' ? tr.settings.bufferBig : bufferSize === 'pequeno' ? tr.settings.bufferSmall : 'Medio'}</span>
+                    <ChevronDown size={18} />
+                  </button>
+                  {activeDropdown === 'buffer' && (
+                    <div className="custom-dropdown-list fade-in">
+                      {['medio', 'grande', 'pequeno'].map(opt => (
+                        <div 
+                          key={opt}
+                          className="custom-dropdown-item focusable"
+                          tabIndex="0"
+                          onClick={() => { setBufferSize(opt); setActiveDropdown(null); }}
+                        >
+                          {opt === 'medio' ? tr.settings.bufferDesc : opt === 'grande' ? tr.settings.bufferBig : tr.settings.bufferSmall}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="settings-form-row">
                 <label>{tr.settings.streamQuality}</label>
-                <select className="settings-select focusable" defaultValue="1080p">
-                  <option value="1080p">{tr.settings.qualityFHD}</option>
-                  <option value="720p">{tr.settings.qualityHD}</option>
-                  <option value="4k">{tr.settings.quality4k}</option>
-                </select>
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <button 
+                    className="settings-select focusable"
+                    onClick={() => setActiveDropdown(activeDropdown === 'quality' ? null : 'quality')}
+                    style={{ textAlign: 'left', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <span>{streamQuality === '1080p' ? tr.settings.qualityFHD : streamQuality === '720p' ? tr.settings.qualityHD : tr.settings.quality4k}</span>
+                    <ChevronDown size={18} />
+                  </button>
+                  {activeDropdown === 'quality' && (
+                    <div className="custom-dropdown-list fade-in">
+                      {['1080p', '720p', '4k'].map(opt => (
+                        <div 
+                          key={opt}
+                          className="custom-dropdown-item focusable"
+                          tabIndex="0"
+                          onClick={() => { setStreamQuality(opt); setActiveDropdown(null); }}
+                        >
+                          {opt === '1080p' ? tr.settings.qualityFHD : opt === '720p' ? tr.settings.qualityHD : tr.settings.quality4k}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
 
@@ -1860,25 +1995,43 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
               <div className="settings-card-header">
                 <Globe size={24} color="var(--primary-red)" />
                 <div className="settings-card-title-group">
-                  <h3>{tr.settings.appLanguage}</h3>
+                  <h3>{tr.settings.appLanguage}:</h3>
                   <p>{tr.settings.appLanguageSub}</p>
                 </div>
               </div>
 
               <div className="settings-form-row" style={{ justifyContent: 'center' }}>
-                <select className="settings-select focusable" value={appLanguage} onChange={(e) => setAppLanguage(e.target.value)}>
-                  <option value="es">{tr.settings.langES}</option>
-                  <option value="en">{tr.settings.langEN}</option>
-                  <option value="fr">{tr.settings.langFR}</option>
-                  <option value="de">{tr.settings.langDE}</option>
-                </select>
+                <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
+                  <button 
+                    className="settings-select focusable"
+                    onClick={() => setActiveDropdown(activeDropdown === 'language' ? null : 'language')}
+                    style={{ textAlign: 'left', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <span>{appLanguage === 'es' ? tr.settings.langES : appLanguage === 'en' ? tr.settings.langEN : appLanguage === 'fr' ? tr.settings.langFR : tr.settings.langDE}</span>
+                    <ChevronDown size={18} />
+                  </button>
+                  {activeDropdown === 'language' && (
+                    <div className="custom-dropdown-list fade-in">
+                      {['es', 'en', 'fr', 'de'].map(opt => (
+                        <div 
+                          key={opt}
+                          className="custom-dropdown-item focusable"
+                          tabIndex="0"
+                          onClick={() => { setAppLanguage(opt); setActiveDropdown(null); }}
+                        >
+                          {opt === 'es' ? tr.settings.langES : opt === 'en' ? tr.settings.langEN : opt === 'fr' ? tr.settings.langFR : tr.settings.langDE}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* SECCIÓN 4: Acciones de Cuenta */}
             <div className="settings-card account-actions-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px 0', background: 'transparent', border: 'none' }}>
               <button className="btn-play-movie" onClick={onLogout} style={{ width: '100%', maxWidth: '300px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', padding: '0 16px', letterSpacing: '1px', borderRadius: '12px' }}>
-                <LogOut size={22} style={{ marginRight: '8px' }} /> {tr.nav.logout.toUpperCase()}
+                <SolidLogoutIcon size={22} style={{ marginRight: '8px' }} /> {tr.nav.logout.toUpperCase()}
               </button>
             </div>
 
@@ -1890,23 +2043,23 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
 
       {/* BOTTOM NAVIGATION */}
       <div className="bottom-nav">
-        <div className={`nav-item focusable ${activeBottomNav === 'home' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('home'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
-          <Home size={28} />
+        <div className={`nav-item ${activeBottomNav === 'home' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('home'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
+          <SolidHomeIcon size={28} />
         </div>
-        <div className={`nav-item focusable ${activeBottomNav === 'live' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('live'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
-          <Tv size={28} />
+        <div id="sn-nav-live" className={`nav-item ${activeBottomNav === 'live' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('live'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
+          <CustomLiveIcon size={28} />
         </div>
-        <div className={`nav-item focusable ${activeBottomNav === 'movies' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('movies'); setActiveCategory('all'); setSearchQuery(''); setActiveGenre('Todos'); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
-          <Film size={28} />
+        <div id="sn-nav-movies" className={`nav-item ${activeBottomNav === 'movies' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('movies'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
+          <SolidFilmIcon size={28} />
         </div>
-        <div className={`nav-item focusable ${activeBottomNav === 'series' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('series'); setActiveCategory('all'); setSearchQuery(''); setActiveGenre('Todos'); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
-          <Clapperboard size={28} />
+        <div id="sn-nav-series" className={`nav-item ${activeBottomNav === 'series' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('series'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
+          <SolidSeriesIcon size={28} />
         </div>
-        <div className={`nav-item focusable ${activeBottomNav === 'settings' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('settings'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
-          <Settings size={28} />
+        <div id="sn-nav-settings" className={`nav-item ${activeBottomNav === 'settings' ? 'active' : ''}`} onClick={() => { setActiveBottomNav('settings'); setActiveCategory('all'); setSearchQuery(''); setSelectedMovieId(null); setSelectedSeriesId(null); setSelectedMatchId(null); }}>
+          <SolidSettingsIcon size={28} />
         </div>
-        <div className="nav-item focusable" onClick={onLogout}>
-          <LogOut size={28} />
+        <div className="nav-item" onClick={onLogout}>
+          <SolidLogoutIcon size={28} />
         </div>
       </div>
 
@@ -1924,54 +2077,110 @@ const DashboardLayout = ({ onLogout, playlistData, appLanguage, setAppLanguage }
       {showQRModal && (
         <div className="qr-overlay fade-in" onClick={() => setShowQRModal(false)}>
           <div className="qr-modal-card bounce-in telegram-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="btn-close-qr focusable" onClick={() => setShowQRModal(false)}>✕</button>
-            <h2 className="qr-title">{tr.payment?.title || 'Adquirir Licencia VIP'}</h2>
+            <button id="sn-modal-close-coll" className="btn-close-qr focusable" data-sn-down="#sn-pin-input-coll" data-sn-up="#sn-pin-input-coll" onClick={() => setShowQRModal(false)}>✕</button>
+            <h2 className="qr-title" style={{ marginBottom: '8px' }}>{tr.payment?.title || 'Adquirir Licencia VIP'}</h2>
+
+            <div className="device-id-badge" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '5px',
+              margin: '0 auto 5px auto'
+            }}>
+              <span style={{ fontSize: '16px', color: 'white', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>MAC:</span>
+              <span style={{ fontSize: '20px', color: '#f1c40f', fontWeight: '900', fontFamily: 'monospace', letterSpacing: '1px' }}>
+                {(() => {
+                  let id = localStorage.getItem('thriptw_device_id');
+                  if (id && id.includes(';')) {
+                    id = id.replace(/;/g, ':');
+                    localStorage.setItem('thriptw_device_id', id);
+                  }
+                  const isMacFormat = /^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/i.test(id);
+
+                  if (!id || !isMacFormat) {
+                    const hex = '0123456789ABCDEF';
+                    id = Array.from({length: 6}, () => hex[Math.floor(Math.random()*16)] + hex[Math.floor(Math.random()*16)]).join(':');
+                    localStorage.setItem('thriptw_device_id', id);
+                  }
+                  return id;
+                })()}
+              </span>
+            </div>
             
-            <div className="telegram-steps-container">
-              {/* PASO 1 */}
-              <div className="telegram-step">
-                <div className="telegram-step-header">
-                  <div className="telegram-step-number">1</div>
-                  <h4>{tr.payment?.step1 || 'Transfiere 4.95 €'}</h4>
+            <div className="telegram-steps-container" style={{ width: '100%', marginTop: '10px' }}>
+              {/* PASOS 1 & 2 COMBINADOS VERTICALMENTE */}
+              <div className="telegram-step" style={{ display: 'flex', flexDirection: 'column', gap: '5px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', alignItems: 'center' }}>
+                {/* PAYPAL */}
+                <div className="qr-item-vertical" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '10px' }}>
+                    <div className="telegram-step-number">1</div>
+                    <h4 style={{ color: '#fff', margin: 0, fontSize: '15px' }}>{tr.payment?.step1 || 'Pagar 6,95 €'}</h4>
+                  </div>
+                  <div style={{ background: '#fff', padding: '6px', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px', width: '142px', height: '142px' }}>
+                    <img 
+                      src="./QR.png" 
+                      alt="PayPal QR" 
+                      onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thriptw/6.95EUR"}
+                      style={{ width: '130px', height: '130px', display: 'block', objectFit: 'contain' }} 
+                    />
+                  </div>
+                  <p style={{ color: '#0088cc', fontSize: '15px', fontWeight: 'bold', margin: 0 }}>Paypal: @thriptw</p>
                 </div>
-                <div className="qr-image-wrapper telegram-qr-wrapper">
-                  <img loading="lazy" decoding="async" src="/QR.png" alt="Código QR @thriptw" className="qr-image" 
-                    onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://paypal.me/thrip/4.95EUR"} />
+
+                {/* DIVIDER */}
+                <div style={{ width: '80%', height: '1px', background: 'rgba(255,255,255,0.05)', margin: '5px 0' }}></div>
+
+                {/* TELEGRAM */}
+                <div className="qr-item-vertical" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '10px' }}>
+                    <div className="telegram-step-number">2</div>
+                    <h4 style={{ color: '#fff', margin: 0, fontSize: '15px' }}>{tr.payment?.step2 || 'Enviar Recibo'}</h4>
+                  </div>
+                  <div style={{ background: '#fff', padding: '6px', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px', width: '142px', height: '142px' }}>
+                    <img 
+                      src="./qr telegram.png" 
+                      alt="Telegram QR" 
+                      onError={(e) => e.target.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://t.me/thriptw"}
+                      style={{ width: '130px', height: '130px', display: 'block', objectFit: 'contain' }} 
+                    />
+                  </div>
+                  <p style={{ color: '#0088cc', fontSize: '15px', fontWeight: 'bold', margin: 0 }}>Telegram: @thriptw</p>
                 </div>
               </div>
 
-              {/* PASO 2 */}
-              <div className="telegram-step">
-                <div className="telegram-step-header">
-                  <div className="telegram-step-number">2</div>
-                  <h4>{tr.payment?.step2 || 'Avisar al Administrador'}</h4>
+              {/* PASO 3: PIN ENTRY */}
+              <div className="telegram-step" style={{ width: '100%', marginTop: '10px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '12px', border: '1px solid var(--primary-red)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <div className="telegram-step-number" style={{ width: '30px', height: '30px', fontSize: '16px' }}>3</div>
+                  <h4 style={{ color: '#fff', fontSize: '16px', margin: 0 }}>Ingresa PIN activación</h4>
                 </div>
-                <button className="btn-telegram-action focusable" onClick={() => window.open('https://t.me/thriptw', '_blank')}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.198 2.027c-1.004-.326-2.008-.326-3.013 0L3.125 7.575C1.65 8.12 1.65 9.754 3.125 10.3l4.316 1.6v5.8c0 1.09.89 1.98 1.98 1.98h.02c1.09 0 1.98-.89 1.98-1.98v-3.513l5.093 3.395c.78.52 1.83.213 2.152-.64l3.528-11.64c.265-.873-.13-1.803-.996-2.068z"/></svg> 
-                  {tr.payment?.btnTelegram || 'Enviar Recibo por Telegram'}
-                </button>
-              </div>
-
-              {/* PASO 3 */}
-              <div className="telegram-step">
-                <div className="telegram-step-header">
-                  <div className="telegram-step-number">3</div>
-                  <h4>{tr.payment?.step3 || 'Código de 12 dígitos'}</h4>
-                </div>
-                <div className="telegram-input-group">
+                <div className="telegram-input-group" style={{ display: 'flex', gap: '10px' }}>
                   <input 
+                    id="sn-pin-input-coll"
+                    className="focusable"
+                    data-sn-up="#sn-modal-close-coll"
+                    data-sn-right="#sn-confirm-pin-coll"
+                    data-sn-down="#sn-confirm-pin-coll"
                     type="text" 
-                    placeholder={tr.payment?.codePlaceholder || 'Ingresa tu Pin'}
+                    placeholder="Escribe el PIN..."
                     value={activationCode}
                     onChange={(e) => setActivationCode(e.target.value.toUpperCase())}
                     maxLength={14}
+                    style={{ flex: 1, height: '45px', fontSize: '16px', textAlign: 'center' }}
                   />
-                  <button className="btn-paypal btn-redeem focusable" onClick={handleConfirmPayment} disabled={isVerifying || activationCode.length < 12}>
-                    <Key size={18} /> {isVerifying ? (tr.payment?.verifying || 'Validando...') : (tr.payment?.confirmPayment || 'Canjear')}
+                  <button 
+                    id="sn-confirm-pin-coll"
+                    className="btn-paypal btn-redeem focusable" 
+                    data-sn-left="#sn-pin-input-coll"
+                    data-sn-up="#sn-pin-input-coll"
+                    onClick={handleConfirmPayment} 
+                    disabled={isVerifying || activationCode.length < 12}
+                    style={{ height: '45px', padding: '0 20px' }}
+                  >
+                    {isVerifying ? '...' : 'ACTIVAR'}
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Globe, User, Lock, Eye, EyeOff, Link, LogIn, Tv, FileText } from 'lucide-react';
+import { Globe, User, Lock, Eye, EyeOff, Link, LogIn, Tv, FileText, ShieldCheck } from 'lucide-react';
 import { parseM3UString } from '../services/iptwParser';
 import { fetchXtreamData } from '../services/xtreamService';
 import { translations } from '../i18n/translations';
 import './LoginScreen.css';
 
 const isWebLogin = typeof window !== 'undefined' && window.location.protocol !== 'file:' && window.location.hostname !== 'localhost';
-const API_BASE_URL = isWebLogin ? window.location.origin : 'https://thriptw-web.onrender.com';
+const isElectronLogin = typeof window !== 'undefined' && (window.process?.type === 'renderer' || navigator.userAgent.toLowerCase().indexOf(' electron/') > -1);
+const API_BASE_URL = isWebLogin ? window.location.origin : (isElectronLogin ? 'http://localhost:3001' : 'https://thriptw-web.onrender.com');
 
-const LoginScreen = ({ onLogin, appLanguage }) => {
+const LoginScreen = ({ onLogin, appLanguage, setAppLanguage }) => {
   const t = translations[appLanguage].login;
   const [activeTab, setActiveTab] = useState('xtream'); // 'xtream' | 'm3u'
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +21,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
   const [m3uUrl, setM3uUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [antiBloqueo, setAntiBloqueo] = useState(() => localStorage.getItem('thriptw_antibloqueo') === 'true');
 
   useEffect(() => {
     // 1. Detección de parámetros en la URL (para enlaces inteligentes)
@@ -46,8 +48,9 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
       
       const autoConnect = async () => {
         setIsLoading(true);
+        const useAntiBloqueo = localStorage.getItem('thriptw_antibloqueo') === 'true';
         try {
-          const xtreamData = await fetchXtreamData(finalUrl, finalUser, finalPass);
+          const xtreamData = await fetchXtreamData(finalUrl, finalUser, finalPass, useAntiBloqueo);
           if (xtreamData.channels.length === 0 && xtreamData.movies.length === 0 && xtreamData.series.length === 0) {
             setErrorMsg(t.errorNoChannels);
             setIsLoading(false);
@@ -60,7 +63,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
           
           onLogin({ type: 'xtream', data: xtreamData });
         } catch (err) {
-          setErrorMsg("Error de conexión: " + err.message);
+          setErrorMsg("Error de conexión");
           setIsLoading(false);
         }
       };
@@ -112,7 +115,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
        setIsLoading(true);
        setErrorMsg('');
        try {
-         const xtreamData = await fetchXtreamData(xtUrl, xtUser, xtPass);
+         const xtreamData = await fetchXtreamData(xtUrl, xtUser, xtPass, antiBloqueo);
          if (xtreamData.channels.length === 0 && xtreamData.movies.length === 0 && xtreamData.series.length === 0) {
            setErrorMsg(t.errorNoChannels);
            setIsLoading(false);
@@ -123,7 +126,7 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
          localStorage.setItem('thriptw_xtPass', xtPass);
          onLogin({ type: 'xtream', data: xtreamData });
        } catch (err) {
-         setErrorMsg(err.message);
+         setErrorMsg("Error de conexión");
          setIsLoading(false);
        }
        return;
@@ -138,29 +141,10 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
       setIsLoading(true);
       setErrorMsg('');
       try {
-        const isEXE = window.location.protocol === 'file:';
-        let response;
+        // Intento directo
+        const response = await fetch(m3uUrl);
         
-        if (isEXE) {
-          // En el EXE forzamos el proxy para saltar el bloqueo del ISP
-          response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: m3uUrl })
-          });
-        } else {
-          try {
-            response = await fetch(m3uUrl);
-          } catch (e) {
-            response = await fetch(`${API_BASE_URL}/api/proxy/m3u`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ url: m3uUrl })
-            });
-          }
-        }
-        
-        if (!response.ok) throw new Error('No se pudo descargar la lista M3U');
+        if (!response.ok) throw new Error(`No se pudo descargar la lista M3U (Status: ${response.status})`);
         const text = await response.text();
         const parsedData = parseM3UString(text);
         
@@ -168,7 +152,6 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
           throw new Error('La lista M3U está vacía o tiene un formato no válido.');
         }
 
-        localStorage.setItem('thriptw_m3uUrl', m3uUrl);
         onLogin({ type: 'm3u', data: parsedData });
       } catch (err) {
         setErrorMsg('Error al cargar la lista M3U: ' + err.message);
@@ -181,7 +164,8 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
   };
 
   return (
-    <div className="login-container fade-in">
+    <div className="login-screen-wrapper">
+      <div className="login-container fade-in">
       {/* SECCIÓN DEL LOGO Y MARCA */}
       <div className="logo-section">
         <div className="img-logo-circle">
@@ -204,11 +188,15 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
             <div className="input-wrapper">
               <User className="input-icon" size={20} />
               <input 
+                id="sn-login-user"
                 type="text" 
                 className="input-field focusable" 
                 placeholder={t.usernamePlaceholder} 
                 value={xtUser}
                 onChange={(e) => setXtUser(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowDown') { e.preventDefault(); document.getElementById('sn-login-pass')?.focus(); }
+                }}
               />
             </div>
           </div>
@@ -218,11 +206,16 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
             <div className="input-wrapper">
               <Lock className="input-icon" size={20} />
               <input 
+                id="sn-login-pass"
                 type={showPassword ? "text" : "password"} 
                 className="input-field focusable" 
                 placeholder={t.passwordPlaceholder} 
                 value={xtPass}
                 onChange={(e) => setXtPass(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowUp') { e.preventDefault(); document.getElementById('sn-login-user')?.focus(); }
+                  if (e.key === 'ArrowDown') { e.preventDefault(); document.getElementById('sn-login-url')?.focus(); }
+                }}
               />
               <button 
                 className="password-toggle focusable"
@@ -239,31 +232,96 @@ const LoginScreen = ({ onLogin, appLanguage }) => {
             <div className="input-wrapper">
               <Globe className="input-icon" size={20} />
               <input 
+                id="sn-login-url"
                 type="text" 
                 className="input-field focusable" 
                 placeholder={t.serverUrlPlaceholder} 
                 value={xtUrl}
                 onChange={(e) => setXtUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowUp') { e.preventDefault(); document.getElementById('sn-login-pass')?.focus(); }
+                  if (e.key === 'ArrowDown') { e.preventDefault(); document.getElementById('sn-antibloqueo-login')?.focus(); }
+                }}
               />
             </div>
           </div>
 
         </div>
 
-        {errorMsg && <div style={{ color: '#ff4d4d', marginTop: '12px', fontSize: '14px', textAlign: 'center' }}>{errorMsg}</div>}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: '320px', margin: '5px auto 10px auto', padding: '0 10px' }}>
+             <span style={{ fontSize: '13px', color: '#888', opacity: 0.8 }}>{t.optimize}</span>
+             <div 
+               id="sn-antibloqueo-login"
+               className="focusable"
+               tabIndex="0"
+               onClick={() => {
+                 const newVal = !antiBloqueo;
+                 setAntiBloqueo(newVal);
+                 localStorage.setItem('thriptw_antibloqueo', newVal);
+               }}
+               onKeyDown={(e) => {
+                 if (e.key === 'ArrowUp') { e.preventDefault(); document.getElementById('sn-login-url')?.focus(); }
+                 if (e.key === 'ArrowDown') { e.preventDefault(); document.getElementById('sn-login-submit')?.focus(); }
+               }}
+               style={{ 
+                 width: '42px', 
+                 height: '22px', 
+                 background: antiBloqueo ? '#2ecc71' : '#333', 
+                 borderRadius: '11px', 
+                 position: 'relative', 
+                 cursor: 'pointer',
+                 transition: 'background 0.3s'
+               }}
+             >
+               <div style={{ 
+                 width: '16px', 
+                 height: '16px', 
+                 background: '#fff', 
+                 borderRadius: '50%', 
+                 position: 'absolute', 
+                 top: '3px', 
+                 left: antiBloqueo ? '23px' : '3px',
+                 transition: 'left 0.3s'
+               }}></div>
+             </div>
+        </div>
 
         {/* BOTÓN CONECTAR */}
-        <button className="submit-btn focusable" type="button" onClick={handleUrlLogin} disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+        <button id="sn-login-submit" className="submit-btn focusable" type="button" onClick={handleUrlLogin} disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowUp') { e.preventDefault(); document.getElementById('sn-antibloqueo-login')?.focus(); }
+          }}
+        >
           <LogIn className="submit-icon" size={20} />
           {isLoading ? t.btnDecoding : t.btnConnect}
         </button>
 
 
 
-        {/* Espaciador inferior */}
-        <div style={{ marginTop: '20px' }}></div>
+        <div style={{ 
+          color: '#ff4d4d', 
+          fontSize: '14px', 
+          textAlign: 'center',
+          minHeight: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0 10px',
+          margin: '10px 0',
+          width: '100%',
+          boxSizing: 'border-box',
+          lineHeight: '1.3',
+          visibility: errorMsg ? 'visible' : 'hidden'
+        }}>
+          {errorMsg || 'Error de conexión, revisa tus datos de acceso'}
+        </div>
 
 
+
+
+
+
+      </div>
       </div>
     </div>
   );
