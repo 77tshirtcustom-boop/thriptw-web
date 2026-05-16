@@ -213,6 +213,19 @@ const AdminPanel = () => {
     }
   };
 
+  const handleAdjustStat = async (type, amount) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/admin/stats/increment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, type, amount })
+      });
+      fetchAllData();
+    } catch (err) {
+      alert("Error al actualizar contador");
+    }
+  };
+
   const handleUpdateCodeStatus = async (pin, status, type) => {
     try {
       if (type) {
@@ -324,14 +337,26 @@ const AdminPanel = () => {
                 </div>
               </div>
               <div className="admin-stat-card">
-                <span className="stat-label">CLIENTES</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="stat-label">CLIENTES</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button className="stat-adjust-btn plus" onClick={() => handleAdjustStat('clients', 1)}>+</button>
+                    <button className="stat-adjust-btn minus" onClick={() => handleAdjustStat('clients', -1)}>-</button>
+                  </div>
+                </div>
                 <div className="stat-value-row">
                   <span className="stat-number" style={{ color: '#ff3131' }}>{stats?.codes?.used || 0}</span>
                   <Key className="stat-icon" size={24} color="#ff3131" />
                 </div>
               </div>
               <div className="admin-stat-card">
-                <span className="stat-label">VENDIDOS</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="stat-label">VENDIDOS</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button className="stat-adjust-btn plus" onClick={() => handleAdjustStat('sold', 1)}>+</button>
+                    <button className="stat-adjust-btn minus" onClick={() => handleAdjustStat('sold', -1)}>-</button>
+                  </div>
+                </div>
                 <div className="stat-value-row">
                   <span className="stat-number" style={{ color: '#3498db' }}>{stats?.devices?.total || 0}</span>
                   <Smartphone className="stat-icon" size={24} color="#3498db" />
@@ -369,12 +394,10 @@ const AdminPanel = () => {
                           <button 
                             className="btn-icon-action" 
                             style={{ color: '#fff', opacity: 0.8 }}
-                            onClick={() => {
-                              setPinToUpdateStatus(c.pin);
-                              setShowAddPinModal(true);
-                            }}
+                            onClick={() => copyToClipboard(c.pin)}
+                            title="Copiar PIN"
                           >
-                            <Plus size={16} />
+                            <Copy size={16} />
                           </button>
                         </div>
                       </td>

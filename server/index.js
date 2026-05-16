@@ -533,14 +533,15 @@ app.post('/api/admin/stats', async (req, res) => {
 });
 
 app.post('/api/admin/stats/increment', async (req, res) => {
-  const { password, type } = req.body; // 'clients' o 'sold'
+  const { password, type, amount = 1 } = req.body; // 'clients' o 'sold'
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
 
   try {
     const key = type === 'clients' ? 'extra_clients' : 'extra_sold';
     const config = await Config.findOne({ key });
     const currentVal = config ? parseInt(config.value) : 0;
-    await Config.findOneAndUpdate({ key }, { value: (currentVal + 1).toString() }, { upsert: true });
+    const newVal = Math.max(0, currentVal + amount);
+    await Config.findOneAndUpdate({ key }, { value: newVal.toString() }, { upsert: true });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Increment failed' });
