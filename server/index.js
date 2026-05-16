@@ -516,7 +516,8 @@ app.post('/api/admin/stats', async (req, res) => {
 
     res.json({
       devices: { 
-        total: bonusSold, 
+        total: totalDevices, 
+        manualSold: bonusSold, 
         trial: trialDevices, 
         active: activeDevices, 
         blocked: blockedDevices 

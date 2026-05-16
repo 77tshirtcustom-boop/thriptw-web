@@ -358,7 +358,7 @@ const AdminPanel = () => {
                   </div>
                 </div>
                 <div className="stat-value-row">
-                  <span className="stat-number" style={{ color: '#3498db' }}>{stats?.devices?.total || 0}</span>
+                  <span className="stat-number" style={{ color: '#3498db' }}>{stats?.devices?.manualSold || 0}</span>
                   <Smartphone className="stat-icon" size={24} color="#3498db" />
                 </div>
               </div>
