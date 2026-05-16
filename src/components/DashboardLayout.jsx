@@ -451,7 +451,11 @@ const DashboardLayout = ({
   triggerFullRefresh, 
   appLanguage, 
   setAppLanguage,
-  serverTrialDays = 7
+  serverTrialDays = 7,
+  deviceStatus = 'trial',
+  setDeviceStatus,
+  setTrialDaysLeft,
+  syncDeviceStatus
 }) => {
   const tr = translations[appLanguage] || translations.es;
 
@@ -468,7 +472,7 @@ const DashboardLayout = ({
   // 1. ESTADOS (ORGANIZADOS POR CATEGORÍAS)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeBottomNav, setActiveBottomNav] = useState('home');
-  const [isPremium, setIsPremium] = useState(false); // SIMULADO: No premium para ver estado de prueba
+  const isPremium = deviceStatus === 'active';
   const [showQRModal, setShowQRModal] = useState(false);
   const [activationCode, setActivationCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -476,7 +480,7 @@ const DashboardLayout = ({
 
 
   const [isTrialExpired, setIsTrialExpired] = useState(false);
-  const [trialDaysLeft, setTrialDaysLeft] = useState(7);
+  const trialDaysLeft = serverTrialDays;
 
   // Auto-focus para PIN input cuando aparece el bloqueo o el modal
   useEffect(() => {
@@ -922,8 +926,8 @@ const DashboardLayout = ({
     console.log(`[REFRESH] Solicitando datos frescos del servidor...`);
 
     try {
-      // 1. Forzamos un pequeño "limpiado" visual del estado para asegurar re-renderizado
-      // setPlaylistData({ channels: [], movies: [], series: [], categories: [] }); // Opcional, pero agresivo
+      // 1. Sincronizar estado de suscripción primero
+      if (syncDeviceStatus) await syncDeviceStatus();
 
       const data = await fetchXtreamData(xtUrl, xtUser, xtPass, antiBloqueo);
 
