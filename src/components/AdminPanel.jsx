@@ -411,7 +411,7 @@ const AdminPanel = () => {
               </div>
             </div>
 
-            <div style={{ marginBottom: '20px', width: '100%' }}>
+            <div style={{ marginBottom: '0px', width: '100%' }}>
               <input 
                 type="text" 
                 placeholder="🔍 BUSCAR POR NOMBRE, PIN O MAC..." 
@@ -603,7 +603,7 @@ const AdminPanel = () => {
 
       {showEditModal && selectedDeviceForEdit && (
         <div className="admin-modal-overlay fade-in" onClick={() => setShowEditModal(false)}>
-          <div className="admin-modal-card bounce-in" onClick={(e) => e.stopPropagation()}>
+          <div className="admin-modal-card bounce-in" style={{ transform: 'translateY(-20px)' }} onClick={(e) => e.stopPropagation()}>
             <h2 className="admin-modal-title">Editar Cliente</h2>
             <p style={{ color: '#888', marginBottom: '20px' }}>MAC: {selectedDeviceForEdit.deviceId}</p>
             
