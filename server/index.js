@@ -389,6 +389,25 @@ app.post('/api/admin/codes', async (req, res) => {
   res.json(codes);
 });
 
+app.post('/api/admin/codes/update-status', async (req, res) => {
+  const { password, pin, status } = req.body;
+  if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
+  
+  try {
+    const code = await Code.findOne({ pin });
+    if (code) {
+      code.status = status;
+      if (status === 'used') code.usedAt = new Date();
+      await code.save();
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: 'Code not found' });
+    }
+  } catch (e) {
+    res.status(500).json({ error: 'Update failed' });
+  }
+});
+
 app.post('/api/admin/devices', async (req, res) => {
   const { password } = req.body;
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });

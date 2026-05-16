@@ -55,6 +55,7 @@ const AdminPanel = () => {
   const [pinToDelete, setPinToDelete] = useState(null);
   const [deviceToDelete, setDeviceToDelete] = useState(null);
   const [showAddPinModal, setShowAddPinModal] = useState(false);
+  const [pinToUpdateStatus, setPinToUpdateStatus] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDeviceForEdit, setSelectedDeviceForEdit] = useState(null);
   const [tempName, setTempName] = useState('');
@@ -212,6 +213,30 @@ const AdminPanel = () => {
     }
   };
 
+  const handleUpdateCodeStatus = async (pin, status, type) => {
+    try {
+      if (type) {
+        await fetch(`${API_BASE_URL}/api/admin/stats/increment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password, type })
+        });
+      }
+      if (pin) {
+        await fetch(`${API_BASE_URL}/api/admin/codes/update-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password, pin, status })
+        });
+      }
+      setShowAddPinModal(false);
+      setPinToUpdateStatus(null);
+      fetchAllData();
+    } catch (err) {
+      alert("Error al actualizar código");
+    }
+  };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     // Opcional: mostrar un pequeño toast o feedback
@@ -332,7 +357,7 @@ const AdminPanel = () => {
                       </td>
                       <td>
                         <span className={`status-tag ${c.status}`}>
-                          {c.status === 'available' ? 'LIBRE' : 'CLIENTE'}
+                          {c.status === 'available' ? 'LIBRE' : 'ACTIVADO'}
                         </span>
                       </td>
                       <td>{new Date(c.createdAt).toLocaleDateString()}</td>
@@ -344,7 +369,10 @@ const AdminPanel = () => {
                           <button 
                             className="btn-icon-action" 
                             style={{ color: '#fff', opacity: 0.8 }}
-                            onClick={() => setShowAddPinModal(true)}
+                            onClick={() => {
+                              setPinToUpdateStatus(c.pin);
+                              setShowAddPinModal(true);
+                            }}
                           >
                             <Plus size={16} />
                           </button>
@@ -571,28 +599,28 @@ const AdminPanel = () => {
       )}
 
       {showAddPinModal && (
-        <div className="admin-modal-overlay fade-in" onClick={() => setShowAddPinModal(false)}>
+        <div className="admin-modal-overlay fade-in" onClick={() => { setShowAddPinModal(false); setPinToUpdateStatus(null); }}>
           <div className="admin-modal-card bounce-in" onClick={(e) => e.stopPropagation()}>
             <h2 className="admin-modal-title">¿Quieres añadir el PIN?</h2>
             <div className="admin-modal-actions" style={{ flexDirection: 'column', gap: '12px', marginTop: '30px' }}>
               <button 
                 className="admin-btn-modal-confirm" 
-                style={{ width: '100%', background: '#3498db', margin: 0 }}
-                onClick={() => handleIncrementStat('clients')}
+                style={{ width: '100%', background: '#ff3131', margin: 0, border: 'none' }}
+                onClick={() => handleUpdateCodeStatus(pinToUpdateStatus, 'used', 'clients')}
               >
                 CLIENTES
               </button>
               <button 
                 className="admin-btn-modal-confirm" 
-                style={{ width: '100%', background: '#2ecc71', margin: 0 }}
-                onClick={() => handleIncrementStat('sold')}
+                style={{ width: '100%', background: '#f1c40f', color: '#000', margin: 0, border: 'none' }}
+                onClick={() => handleUpdateCodeStatus(pinToUpdateStatus, 'used', 'sold')}
               >
                 VENDIDOS
               </button>
               <button 
                 className="admin-btn-modal-cancel" 
-                style={{ width: '100%', margin: 0 }}
-                onClick={() => setShowAddPinModal(false)}
+                style={{ width: '100%', margin: 0, border: 'none', background: '#2a2a2a', color: 'white' }}
+                onClick={() => { setShowAddPinModal(false); setPinToUpdateStatus(null); }}
               >
                 CANCELAR
               </button>

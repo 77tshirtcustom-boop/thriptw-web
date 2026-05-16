@@ -491,7 +491,7 @@
   flex: 1;
   background: #2a2a2a;
   color: white;
-  border: 3px solid var(--admin-accent-yellow); /* Borde amarillo de enfoque */
+  border: none;
   padding: 16px 0;
   border-radius: 16px;
   font-size: 18px;

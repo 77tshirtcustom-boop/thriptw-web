@@ -2798,7 +2798,7 @@ const DashboardLayout = ({
                   </div>
                 </div>
 
-                {isPremium && (
+                {isPremium ? (
                   <div className="trial-badge" style={{ 
                     color: '#2ecc71', 
                     fontSize: '15px', 
@@ -2816,6 +2816,25 @@ const DashboardLayout = ({
                   }}>
                     <Timer size={18} />
                     Licencia Premium
+                  </div>
+                ) : (
+                  <div className="trial-badge" style={{ 
+                    color: '#ff3131', 
+                    fontSize: '15px', 
+                    fontWeight: '800', 
+                    marginTop: '5px', 
+                    marginBottom: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    width: '100%',
+                    textAlign: 'center'
+                  }}>
+                    <Timer size={18} />
+                    {trialDaysLeft} DÍAS DE PRUEBA RESTANTES
                   </div>
                 )}
 
