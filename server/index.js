@@ -56,6 +56,7 @@ const deviceSchema = new mongoose.Schema({
   activatedByPin: String, // NUEVO: Para saber qué PIN usó
   expiresAt: Date,
   lastConnected: { type: Date, default: Date.now },
+  isDeleted: { type: Boolean, default: false }, // NUEVO: Para borrado persistente
   createdAt: { type: Date, default: Date.now }
 });
 const Device = mongoose.model('Device', deviceSchema);
@@ -147,6 +148,14 @@ app.post('/api/devices/sync', async (req, res) => {
       device = new Device({ deviceId, status: 'trial', expiresAt: expires });
       await device.save();
     } else {
+      // Si el dispositivo fue "borrado", lo tratamos como bloqueado para el cliente
+      if (device.isDeleted) {
+        return res.json({ 
+          success: true, 
+          device: { ...device.toObject(), status: 'blocked' } 
+        });
+      }
+
       // LÓGICA DE CADUCIDAD ESTRICTA: Bloqueo automático al terminar el periodo (Trial o 12 meses)
       const now = new Date();
       if (device.expiresAt && device.expiresAt < now && device.status !== 'blocked') {
@@ -412,7 +421,7 @@ app.post('/api/admin/devices', async (req, res) => {
   const { password } = req.body;
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
   
-  const devices = await Device.find().sort({ lastConnected: -1 });
+  const devices = await Device.find({ isDeleted: { $ne: true } }).sort({ lastConnected: -1 });
   res.json(devices);
 });
 
@@ -485,9 +494,10 @@ app.post('/api/admin/codes/delete', async (req, res) => {
 app.post('/api/admin/devices/delete', async (req, res) => {
   const { password, deviceId } = req.body;
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
-
+  
   try {
-    await Device.findOneAndDelete({ deviceId });
+    // CAMBIO: Soft delete para evitar que el dispositivo se auto-registre de nuevo
+    await Device.findOneAndUpdate({ deviceId }, { isDeleted: true });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Delete failed' });
@@ -499,10 +509,10 @@ app.post('/api/admin/stats', async (req, res) => {
   if (!(await checkAdminPassword(password))) return res.status(403).json({ error: 'Acceso Denegado' });
 
   try {
-    const totalDevices = await Device.countDocuments();
-    const trialDevices = await Device.countDocuments({ status: 'trial' });
-    const activeDevices = await Device.countDocuments({ status: 'active' });
-    const blockedDevices = await Device.countDocuments({ status: 'blocked' });
+    const totalDevices = await Device.countDocuments({ isDeleted: { $ne: true } });
+    const trialDevices = await Device.countDocuments({ status: 'trial', isDeleted: { $ne: true } });
+    const activeDevices = await Device.countDocuments({ status: 'active', isDeleted: { $ne: true } });
+    const blockedDevices = await Device.countDocuments({ status: 'blocked', isDeleted: { $ne: true } });
 
     const totalCodes = await Code.countDocuments();
     const availableCodes = await Code.countDocuments({ status: 'available' });

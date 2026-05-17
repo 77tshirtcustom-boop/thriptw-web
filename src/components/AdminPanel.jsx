@@ -601,8 +601,7 @@ const AdminPanel = () => {
       {deviceToDelete && (
         <div className="admin-modal-overlay fade-in" onClick={() => setDeviceToDelete(null)}>
           <div className="admin-modal-card bounce-in" onClick={(e) => e.stopPropagation()}>
-            <h2 className="admin-modal-title">¿Borrar dispositivo {deviceToDelete}?</h2>
-            <p style={{ color: '#888', marginBottom: '30px' }}>Esta acción no se puede deshacer.</p>
+            <h2 className="admin-modal-title">¿Seguro que quieres borrar el dispositivo {deviceToDelete}?</h2>
             <div className="admin-modal-actions">
               <button 
                 className="admin-btn-modal-cancel" 
